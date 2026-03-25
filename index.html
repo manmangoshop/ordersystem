@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">	
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 櫻花季日本精選伴手禮訂購</title>
+    <title>日本精選伴手禮訂購</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
     <!-- Tailwind CSS -->
@@ -149,18 +149,36 @@
         </div>
     </div>
 
-    <!-- Header -->
-    <header class="bg-wagashi text-white text-center py-10 px-4 relative overflow-hidden">
+ <!-- Header / Banner 區塊 -->
+    <header class="bg-wagashi text-white text-center py-12 px-4 relative overflow-hidden">
+        <!-- 背景紋理 -->
         <div class="absolute inset-0 opacity-10" style="background-image: url('https://www.transparenttextures.com/patterns/japanese-sayagata.png');"></div>
+        
         <div class="relative z-10 max-w-2xl mx-auto">
-            <p class="text-gold text-x tracking-[0.4em] mb-2 font-serif">踏春尋櫻 • 遇見美好 </p>
-            <h1 class="text-3xl font-black font-serif tracking-widest mb-2 text-white">満満菓-日本伴手禮</h1>
-            <div class="inline-block bg-white/10 backdrop-blur px-4 py-1 rounded-full text-[12px] font-bold tracking-widest">
-                🔥 現貨熱賣中 🔥
+            <p class="text-gold text-xs md:text-sm tracking-[0.5em] mb-6 font-serif opacity-90">踏春尋櫻 • 遇見美好</p>
+            
+            <!-- Logo 與 標題組合容器 -->
+            <div class="flex flex-row items-center justify-center gap-4 mb-8">
+                <!-- Logo 圖片 -->
+                <img src="https://github.com/manmangoshop/photo/blob/main/MANMANGO-LOGO2.png?raw=true" 
+                     alt="満満菓 LOGO" 
+                     class="h-14 md:h-18 w-auto drop-shadow-lg filter brightness-110">
+                
+                <!-- 裝飾分隔線 -->
+                <div class="h-8 w-[1px] bg-white/30 mx-1 hidden xs:block"></div>
+                
+                <!-- 主標題 -->
+                <h1 class="text-2xl md:text-4xl font-black font-serif tracking-[0.2em] text-white drop-shadow-md whitespace-nowrap">
+                    春季品牌聯慶
+                </h1>
+            </div>
+
+            <!-- 活動標籤 -->
+            <div class="inline-block bg-white/15 backdrop-blur-md border border-white/20 px-6 py-1.5 rounded-full text-[12px] font-bold tracking-[0.3em] uppercase">
+                🌸 日本禮盒 現貨熱賣 🌸
             </div>
         </div>
     </header>
-
     <main class="max-w-2xl mx-auto px-4 py-8">
         <!-- 狀態顯示區 -->
         <div id="loading-spinner" class="text-center py-10 text-gray-400 font-bold">
@@ -330,6 +348,19 @@
                 { id: "SAB1", name: "花朵千層酥-6入紙盒", price: 500, life: "約30天" },
                 { id: "SAB2", name: "花朵千層酥-8入經濟包", price: 580, life: "約30天" }
             ]},
+            { brand: "N.Y.C. SAND", image: "https://github.com/manmangoshop/photo/blob/main/NYCSAND.png?raw=true", items: [
+                { id: "NYCS1", name: "原味焦糖巧克力夾心-4入", price: 350, life: "約7天" },
+                { id: "NYCS2", name: "原味焦糖巧克力夾心-8入", price: 620, life: "約7天" },
+                { id: "NYCS3", name: "原味焦糖巧克力夾心-12入", price: 880, life: "約7天" }
+            ]},
+            { brand: "Brulee Merize", image: "https://github.com/manmangoshop/photo/blob/main/BruleeMerize.png?raw=true", items: [
+                { id: "BM1", name: "烤布蕾奶油塔-5入", price: 480, life: "約20天" },
+                { id: "BM2", name: "烤布蕾奶油塔-8入", price: 750, life: "約20天" },
+                { id: "BM3", name: "烤布蕾千層塔-5入", price: 450, life: "約20天" },
+                { id: "BM4", name: "烤布蕾千層塔-10入", price: 850, life: "約20天" },
+                { id: "BM5", name: "烤布蕾費南雪-5入", price: 450, life: "約20天" },
+                { id: "BM6", name: "綜合禮盒-15入（奶油塔x5｜千層派x6｜費南雪x4）", price: 1250, life: "約20天" }
+            ]},
             { brand: "小倉山莊", image: "https://github.com/manmangoshop/photo/blob/main/ogurasansou.png?raw=true", items: [
                 { id: "OS4", name: "山春秋-10入經濟包", price: 480, life: "約60天" },
                 { id: "OS5", name: "山春秋-20入經濟包", price: 820, life: "約60天" },
@@ -340,11 +371,6 @@
             { brand: "NY Perfect Cheese", image: "https://github.com/manmangoshop/photo/blob/main/NYPerfectCheese.png?raw=true", items: [
                 { id: "NYPC1", name: "起司奶油捲餅-8入", price: 490, life: "約60天" },
                 { id: "NYPC2", name: "起司奶油捲餅-12入", price: 700, life: "約60天" }
-            ]},
-            { brand: "N.Y.C. SAND", image: "https://github.com/manmangoshop/photo/blob/main/NYCSAND.png?raw=true", items: [
-                { id: "NYCS1", name: "原味焦糖巧克力夾心-4入", price: 350, life: "約7天" },
-                { id: "NYCS2", name: "原味焦糖巧克力夾心-8入", price: 620, life: "約7天" },
-                { id: "NYCS3", name: "原味焦糖巧克力夾心-12入", price: 880, life: "約7天" }
             ]},
             { brand: "Yoku Moku", image: "https://github.com/manmangoshop/photo/blob/main/YokuMoku.png?raw=true", items: [
                 { id: "YM1", name: "雪茄蛋捲-14入", price: 520, life: "約30天" },
@@ -392,14 +418,6 @@
             ]},
             { brand: "Tokyo Campanella", image: "https://github.com/manmangoshop/photo/blob/main/TokyoCampanella.png?raw=true", items: [
                 { id: "TC2", name: "巧克力夾心餅乾-10入", price: 720, life: "約30天" }
-            ]},
-            { brand: "Brulee Merize", image: "https://github.com/manmangoshop/photo/blob/main/BruleeMerize.png?raw=true", items: [
-                { id: "BM1", name: "烤布蕾奶油塔-5入", price: 480, life: "約20天" },
-                { id: "BM2", name: "烤布蕾奶油塔-8入", price: 750, life: "約20天" },
-                { id: "BM3", name: "烤布蕾千層塔-5入", price: 450, life: "約20天" },
-                { id: "BM4", name: "烤布蕾千層塔-10入", price: 850, life: "約20天" },
-                { id: "BM5", name: "烤布蕾費南雪-5入", price: 450, life: "約20天" },
-                { id: "BM6", name: "綜合禮盒-15入（奶油塔x5｜千層派x6｜費南雪x4）", price: 1250, life: "約20天" }
             ]},
             { brand: "本高砂屋", image: "https://github.com/manmangoshop/photo/blob/main/Hontaka.png?raw=true", items: [
                 { id: "HT1", name: "法式薄酥餅-18枚", price: 290, life: "約100天" },
@@ -812,7 +830,7 @@
                         <ul class="text-[11px] text-blue-700 font-medium space-y-2 list-disc pl-4 leading-relaxed">
                             <li>訂單確認郵件已寄至：${data.email}</li>
                             <li>請於三日內完成付款，逾期名額自動釋出</li>
-                            <li>完成後請務必【截圖本頁】傳至 LINE 客服對帳</li>
+                            <li>完成後請務必聯絡LINN客戶確定訂單 </li>
                         </ul>
                     </div>
                     <div class="text-center space-y-4">
