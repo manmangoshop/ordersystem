@@ -285,20 +285,20 @@
     <!-- 底部資訊欄 (含整合式進度條) -->
     <div id="footer-bar" class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-100 z-40 shadow-[0_-8px_25px_rgba(0,0,0,0.08)]">
         
-        <!-- 免運進度條 (置於資訊欄最上方) -->
-        <div class="w-full px-6 py-2 bg-gray-50/50">
+        <!-- 免運進度條 -->
+        <div class="w-full px-6 py-2 bg-gray-50/50 border-b border-gray-100">
             <div class="max-w-2xl mx-auto">
                 <div class="flex justify-between text-[10px] font-black mb-1">
                     <span id="shipping-msg" class="text-gray-400">正在計算免運進度...</span>
-                    <span class="text-wagashi" id="shipping-target">$3,000 宅配免運</span>
+                    <span class="text-wagashi" id="shipping-target">滿 $3,000 宅配免運</span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-[3px] overflow-hidden">
-                    <div id="progress-bar" class="bg-wagashi h-full transition-all duration-1000 ease-out shadow-[0_0_8px_rgba(197,129,143,0.5)]" style="width: 0%"></div>
+                    <div id="progress-bar" class="bg-wagashi h-full transition-all duration-1000 ease-out" style="width: 0%"></div>
                 </div>
             </div>
         </div>
 
-        <!-- 金額與按鈕 -->
+         <!-- 金額與按鈕 -->
         <div class="max-w-2xl mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex flex-col">
                 <span id="discount-hint" class="text-[10px] text-green-600 font-bold h-4"></span>
@@ -641,35 +641,60 @@
                     promoSubtotal += item.price * item.qty;
                 }
             });
+
+            // 1. 品牌折扣判斷
+            let promoCount = 0, promoSubtotal = 0;
+            items.forEach(item => {
+                if (promoBrands.some(pb => item.brand.includes(pb.trim()))) {
+                    promoCount += item.qty;
+                    promoSubtotal += item.price * item.qty;
+                }
+            });
+
+            // 2. 折扣與滿額門檻
             const candidates = [];
-            if (note.includes("WinWin2026")) candidates.push({ name: "VIP 92折", deduct: Math.round(baseAmountWithTax * 0.08), rate: 0.92, fixed: 0 });
-            if (note.includes("MMG2026")) candidates.push({ name: "菓友 95折", deduct: Math.round(baseAmountWithTax * 0.05), rate: 0.95, fixed: 0 });
+            if (note.includes("WinWin2026")) candidates.push({ name: "VIP 92折", deduct: Math.round(subtotal * taxFactor * 0.08), rate: 0.92, fixed: 0 });
+            if (note.includes("MMG2026")) candidates.push({ name: "菓友 95折", deduct: Math.round(subtotal * taxFactor * 0.05), rate: 0.95, fixed: 0 });
             if (promoCount >= 2) candidates.push({ name: "品牌聯慶：任2件95折", deduct: Math.round(promoSubtotal * taxFactor * 0.05), rate: 1, fixed: Math.round(promoSubtotal * taxFactor * 0.05) });
             if (note.includes("Sakura2026") && subtotal >= 1500) candidates.push({ name: "櫻花季滿額折$150", deduct: 150, rate: 1, fixed: 150 });
             else if (note.includes("Spring2026") && subtotal >= 888) candidates.push({ name: "櫻花季滿額折$88", deduct: 88, rate: 1, fixed: 88 });
+
             candidates.sort((a, b) => b.deduct - a.deduct);
             const best = candidates.length > 0 ? candidates[0] : { name: "無", rate: 1, fixed: 0 };
-            const finalProductAmount = Math.max(0, Math.round(baseAmountWithTax * best.rate) - best.fixed);
+
+            // 3. 核心邏輯：最終商品金額（含折扣與稅金）
+            const finalProductAmount = Math.max(0, Math.round(subtotal * taxFactor * best.rate) - best.fixed);
+
+            // 4. 以「最終商品金額」判斷免運
             const method = document.getElementById('shippingMethod').value;
             let shippingFee = 0;
             if (subtotal > 0 && !hasChefMarket) {
-                if (method === "超商取貨") shippingFee = subtotal >= 1500 ? 0 : 60;
-                else if (method === "宅配到府") shippingFee = subtotal >= 3000 ? 0 : 210;
+                if (method === "超商取貨") shippingFee = finalProductAmount >= 1500 ? 0 : 60;
+                else if (method === "宅配到府") shippingFee = finalProductAmount >= 3000 ? 0 : 210;
+                else shippingFee = 0;
             }
-            return { subtotal, items, isTax, discountName: best.name, shippingFee, total: finalProductAmount + shippingFee, hasChefMarket };
+
+            return { subtotal, items, isTax, discountName: best.name, shippingFee, finalProductAmount, total: finalProductAmount + shippingFee, hasChefMarket };
         }
 
         function calculateTotal() {
             const res = calculateCalculations();
             footerTotal.innerText = res.total.toLocaleString();
             discountHint.innerText = res.discountName !== "無" ? `已套用: ${res.discountName}` : "";
-            const percent = Math.min((res.subtotal / 3000) * 100, 100);
+            
+            // 進度條判斷 (以最高門檻 $3,000 為基準)
+            const percent = Math.min((res.finalProductAmount / 3000) * 100, 100);
             progressBar.style.width = `${percent}%`;
+            
             if (res.hasChefMarket) shippingMsg.innerText = "已達成！全單免運 🎉";
-            else if (res.subtotal >= 3000) shippingMsg.innerText = "已達成！宅配免運 🎉";
-            else if (res.subtotal >= 1500) shippingMsg.innerText = "已享超取免運";
-            else shippingMsg.innerText = "滿 $1,500 超取免運 / $3,000 宅配免運";
+            else if (res.finalProductAmount >= 3000) shippingMsg.innerText = "已達成！宅配免運 🎉";
+            else if (res.finalProductAmount >= 1500) shippingMsg.innerText = "已享超取免運";
+            else {
+                const target = document.getElementById('shippingMethod').value === "超商取貨" ? 1500 : 3000;
+                shippingMsg.innerText = `再買 $${(target - res.finalProductAmount).toLocaleString()} 享免運`;
+            }
         }
+
 
         function attachListeners() {
             // 同訂購姓名連動
