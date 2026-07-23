@@ -7,9 +7,10 @@
     <link rel="icon" type="image/png" href="https://github.com/manmangoshop/photo/blob/main/Webpage-Logo4.png?raw=true">
     <title>満満菓 Manmango Shop｜日本精選伴手禮/禮盒</title>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght=400;500;700&family=Noto+Serif+TC:wght=600;900&display=swap" rel="stylesheet">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <style>
         :root {
             --shadow-blue: #7494A1;   
@@ -48,9 +49,7 @@
             overflow: hidden;
             background-color: #f3f4f6; 
             position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
         }
 
         .img-loading::before {
@@ -122,29 +121,73 @@
             color: #ef4444;
         }
 
-        /* Banner 漸層設計 */
-        .hero-banner {
-            background: linear-gradient(135deg, #7494A1 0%, #5a665e 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-pattern {
+        /* ====== 【HEADER 輪播圖 專用樣式 (方案 B)】 ====== */
+        .carousel-slide {
             position: absolute;
             inset: 0;
-            opacity: 0.08;
-            background-image: url('https://www.transparenttextures.com/patterns/japanese-sayagata.png');
-            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+            z-index: 10;
+        }
+        .carousel-slide.active {
+            opacity: 1;
+            z-index: 20;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
+            border: none;
+            outline: none;
+        }
+        .dot.active {
+            background-color: #ffffff;
+            transform: scale(1.25);
+            box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+        }
+
+        /* 商品項目小圖容器 */
+        .item-thumb-box {
+            width: 64px;
+            height: 64px;
+            flex-shrink: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            background-color: #f3f4f6;
+            border: 1px solid #f1f1f1;
+            cursor: pointer;
+            position: relative;
+        }
+        .item-thumb-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        .item-thumb-box:hover img {
+            transform: scale(1.08);
+        }
+
+        /* ====== 【方案二：極簡感隱形輸入框 & 隱藏 HTML5 上下微調箭頭】 ====== */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
         }
     </style>
 </head>
 <body id="top">
 
- <!-- 頂部品牌 Header (Logo 放置左上角) -->
+    <!-- 頂部品牌 Header (Logo 放置左上角) -->
     <nav class="sticky-navbar px-4 py-3 border-b border-gray-100">
         <div class="max-w-4xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <img src="https://github.com/manmangoshop/photo/blob/main/MANMANGO-LOGO3.png?raw=true" 
+                <img src="https://github.com/manmangoshop/photo/blob/main/Headlogo.png?raw=true" 
                      alt="Logo" 
                      class="h-10 w-auto">
                 <div class="h-5 w-[1px] bg-gray-200"></div>
@@ -157,23 +200,22 @@
         </div>
     </nav>
 
-    <!-- Hero Banner 區塊 -->
-    <header class="hero-banner text-white text-center py-12 px-6">
-        <div class="hero-pattern"></div>
-        <div class="relative z-10 max-w-2xl mx-auto">
-            <p class="text-gold text-xs tracking-[0.6em] mb-4 font-serif opacity-90 animate-pulse">日系甜點•粽意滿分</p>
-            <h1 class="text-3xl md:text-5xl font-black font-serif tracking-[0.2em] mb-6 drop-shadow-lg">
-                🎁端午節｜618 🎁
-            </h1>
-            <div class="flex flex-col items-center gap-4">
-                <div class="inline-block bg-white/20 backdrop-blur-md border border-white/30 px-6 py-3 rounded-2xl text-[14px] font-black font-serif tracking-[0.3em] uppercase shadow-sm flex flex-col items-center gap-1 text-center">
-                <div>🔥滿＄1000折＄80🔥</div>
-                <div>滿＄2000折＄200(可累贈)</div>
-                <div>🚚現貨商品｜立即出貨</div>
+    <!-- ====== 【HEADER 輪播圖 區塊 (方案 B)】 ====== -->
+    <header class="relative w-full overflow-hidden aspect-[3/2] md:max-h-[500px] bg-gray-100 shadow-md">
+        <!-- 輪播軌道容器 -->
+        <div id="header-carousel-track" class="relative w-full h-full cursor-grab active:cursor-grabbing">
+            <!-- 幻燈片將由 JavaScript 動態生成並注入此處 -->
+        </div>
+        
+        <!-- 和風浮雕紋理覆蓋層 (Sayagata Pattern) -->
+        <div class="absolute inset-0 opacity-[0.06] pointer-events-none z-20" style="background-image: url('https://www.transparenttextures.com/patterns/japanese-sayagata.png');"></div>
+        
+        <!-- 下方黑底漸層 -->
+        <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/40 to-transparent pointer-events-none z-20"></div>
 
-                </div>
-                </div>
-            </div>
+        <!-- 導覽指示點 (Dots) -->
+        <div id="header-carousel-dots" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2.5 z-30">
+            <!-- 指示點將由 JavaScript 動態生成並注入此處 -->
         </div>
     </header>
 
@@ -216,16 +258,20 @@
                     </div>
                 </div>
 
-                <!-- 收件姓名與連動勾選 -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                <!-- 聯絡收件人整合：雙向即時連動 (新增收件電話) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-50 p-4 rounded-2xl border border-gray-100">
                     <div>
                         <label class="block text-xs font-bold text-gray-500 mb-1">收件姓名 <span class="text-red-500">*</span></label>
                         <input type="text" id="recipientName" required class="w-full border-b border-gray-300 py-2 focus:outline-none focus:border-wagashi bg-transparent" placeholder="收件人稱呼">
                     </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">收件電話 <span class="text-red-500">*</span></label>
+                        <input type="tel" id="recipientPhone" required class="w-full border-b border-gray-300 py-2 focus:outline-none focus:border-wagashi bg-transparent" placeholder="收件人電話">
+                    </div>
                     <div class="flex items-end pb-2">
                         <label class="flex items-center gap-2 cursor-pointer group">
                             <input type="checkbox" id="same-as-orderer" class="w-4 h-4 accent-[#B02A2A]">
-                            <span class="text-sm font-medium text-gray-600 group-hover:text-wagashi transition-colors">同訂購姓名</span>
+                            <span class="text-sm font-medium text-gray-600 group-hover:text-wagashi transition-colors font-bold">同訂購人資料</span>
                         </label>
                     </div>
                 </div>
@@ -306,22 +352,35 @@
         <div class="max-w-2xl mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex flex-col">
                 <span id="discount-hint" class="text-[10px] text-green-600 font-bold h-4"></span>
-                <div class="flex items-baseline gap-1">
-                    <span class="text-[10px] text-gray-400 font-black uppercase">Total</span>
+                <div class="flex items-baseline gap-1 text-left">
+                    <span class="text-[10px] text-gray-400 font-black uppercase">TOTAL</span>
                     <span class="text-2xl font-black text-wagashi font-serif leading-none">NT$ <span id="footer-total">0</span></span>
                 </div>
             </div>
             <button id="pre-submit-btn" class="bg-wagashi text-white px-10 py-3.5 rounded-full font-black shadow-lg shadow-red-900/10 active:scale-95 transition-all tracking-widest text-sm">
-                確認訂購
+                確認預購
             </button>
         </div>
     </div>
 
+    <!-- ==================== 【FAST SCROLL NAVIGATION (雙向懸浮導覽按鈕)】 ==================== -->
+    <div id="floating-nav" class="fixed right-4 bottom-32 md:right-6 md:bottom-32 flex flex-col gap-3 z-50 transition-all duration-300 pointer-events-none opacity-0">
+        <!-- 回頂部按鈕 (⌃) -->
+        <button id="btn-scroll-top" onclick="scrollToId('top')" class="pointer-events-auto flex items-center justify-center w-11 h-11 bg-white hover:bg-gray-50 border border-gray-200/50 text-gray-500 rounded-full shadow-lg transition-all active:scale-95 group" aria-label="回到最上面">
+            <svg class="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"></path></svg>
+        </button>
+        <!-- 前往填表按鈕 (✍️ 填寫資料) -->
+        <button id="btn-scroll-form" onclick="scrollToId('form-section')" class="pointer-events-auto flex items-center gap-1.5 px-3.5 py-3.5 bg-wagashi hover:brightness-105 text-white rounded-full shadow-lg transition-all duration-300 active:scale-95 transform origin-right" aria-label="前往登記表單">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"></path></svg>
+            <span class="text-xs font-black tracking-wider leading-none select-none">填寫資料</span>
+        </button>
+    </div>
+
     <!-- Modal 彈窗 -->
-    <div id="modal-overlay" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4 modal opacity-0 pointer-events-none">
+    <div id="modal-overlay" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4 modal opacity-0 pointer-events-none text-left">
         <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden modal-content flex flex-col max-h-[90vh]">
             <div id="modal-header" class="bg-wagashi text-white py-4 px-6 text-center relative flex-shrink-0">
-                <h3 id="modal-title" class="font-serif font-bold tracking-widest text-lg">核對訂單內容</h3>
+                <h3 id="modal-title" class="font-serif font-bold tracking-widest text-lg text-white">核對訂單內容</h3>
                 <button id="close-modal" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors">✕</button>
             </div>
             <div id="modal-body" class="p-6 overflow-y-auto grow no-scrollbar bg-white"></div>
@@ -329,13 +388,19 @@
                 <!-- 修改內容按鈕 -->
                 <button id="back-edit-btn" class="flex-1 py-3 text-sm font-bold text-gray-500 hover:bg-gray-100 rounded-xl transition-all">修改內容</button>
                 <!-- 確認送出按鈕 -->
-                <button id="confirm-submit-btn" class="flex-1 py-3 text-sm font-bold bg-wagashi text-white rounded-xl shadow-md hover:brightness-110 transition-all">確認送出</button>
+                <button id="confirm-submit-btn" class="flex-1 py-3 text-sm font-bold bg-wagashi text-white rounded-xl shadow-md hover:brightness-110 transition-all text-white">確認送出</button>
             </div>
         </div>
     </div>
 
+    <!-- 智慧商品樣式圖片大圖 Lightbox 彈窗 -->
+    <div id="lightbox-overlay" class="fixed inset-0 bg-black/90 z-[70] hidden flex items-center justify-center p-4 transition-opacity duration-300 opacity-0 pointer-events-none" onclick="hideLightbox()">
+        <button class="absolute right-6 top-6 text-white/60 hover:text-white text-2xl font-bold transition-colors" onclick="hideLightbox()">✕</button>
+        <img id="lightbox-img" src="" class="max-w-full max-h-[85vh] rounded-xl object-contain shadow-2xl transition-transform duration-300 scale-95" onclick="event.stopPropagation()">
+    </div>
+
     <!-- Warning Modal -->
-    <div id="warning-overlay" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-6 modal opacity-0 pointer-events-none">
+    <div id="warning-overlay" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-6 modal opacity-0 pointer-events-none text-left">
         <div class="bg-white w-full max-w-xs rounded-3xl shadow-xl overflow-hidden modal-content p-8 text-center">
             <div class="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
@@ -346,9 +411,18 @@
         </div>
     </div>
 
+    <!-- ===================================================================== -->
     <script>
+        // ==================== 【HEADER 頂部輪播圖網址設定區】 ====================
+        const CAROUSEL_IMAGES = [
+            "https://github.com/manmangoshop/systemheader/blob/main/header260901.png?raw=true",
+            "https://github.com/manmangoshop/systemheader/blob/main/header-product.png?raw=true",
+            "https://github.com/manmangoshop/systemheader/blob/main/header-pi.png?raw=true"
+        ];
+        // =====================================================================
+
         // ================= 優惠活動自動滿額折開關 =================
-        const ENABLE_AUTO_TIER_DISCOUNT = true; // 設為 true 開啟此自動折抵活動，false 則關閉
+        const ENABLE_AUTO_TIER_DISCOUNT = true; 
 
         function getAutoTierDiscount(amount) {
             if (!ENABLE_AUTO_TIER_DISCOUNT) return 0;
@@ -366,215 +440,238 @@
 
         const promoBrands = ["Fondan",];
 
-const productsData = [
-            { brand: "小倉山莊-山春秋", image: "https://github.com/manmangoshop/photo/blob/main/ogurasansou.png?raw=true", items: [
-                { id: "OS4", name: "山春秋-10入經濟包", price: 480, life: "約60天" },
-                { id: "OS5", name: "山春秋-20入經濟包", price: 820, life: "約60天" },
-                { id: "OS1", name: "山春秋-8入紙盒", price: 560, life: "約60天" },
-                { id: "OS2", name: "山春秋-12入鐵盒", price: 900, life: "約60天" },
-                { id: "OS3", name: "山春秋-16入鐵盒", price: 1100, life: "約60天" }
-            ]},
-            { brand: "小倉山莊-無撰別", image: "https://github.com/manmangoshop/photo/blob/main/ogurasansou-random-cut.png?raw=true", items: [
-                { id: "OS9", name: "嵯峨乃燒(甜醬油)-250g", price: 300, life: "約90天" },
-                { id: "OS10", name: "定家之月(蝦子)-250g", price: 300, life: "約90天" },
-                { id: "OS11", name: "定家之月(和三盆糖)-250g", price: 300, life: "約90天" },
-                { id: "OS12", name: "定家之月(沙拉薄鹽)-250g", price: 300, life: "約90天" }
-            ]},
-            { brand: "Brulee Merize", image: "https://github.com/manmangoshop/photo/blob/main/BruleeMerize.png?raw=true", items: [
-                { id: "BM1", name: "烤布蕾奶油塔-5入", price: 480, life: "約20天" },
-                { id: "BM2", name: "烤布蕾奶油塔-8入", price: 750, life: "約20天" },
-                { id: "BM3", name: "烤布蕾千層塔-5入", price: 450, life: "約20天" },
-                { id: "BM4", name: "烤布蕾千層塔-10入", price: 850, life: "約20天" },
-                { id: "BM5", name: "烤布蕾費南雪-5入", price: 450, life: "約20天" },
-                { id: "BM6", name: "綜合禮盒-15入（奶油塔x5｜千層派x6｜費南雪x4）", price: 1250, life: "約20天" },
-                { id: "BM7", name: "烤布蕾奶油塔-5入(開心果口味)", price: 480, life: "約20天" }
+        const productsData = [
+            { brand: "Yoku Moku", image: "https://github.com/manmangoshop/photo/blob/main/YokuMoku.png?raw=true", items: [
+                { id: "YM1", name: "雪茄蛋捲-14入", price: 520, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/ym1.jpg?raw=true" },
+                { id: "YM2", name: "雪茄蛋捲-20入", price: 800, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/ym2.jpg?raw=true" },
+                { id: "YM3", name: "雪茄蛋捲-30入", price: 1150, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/ym3.jpg?raw=true" },
+                { id: "YM4", name: "臻饌濃巧禮盒-27入", price: 1080, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/ym4.png?raw=true" },
+                { id: "YM6", name: "喜饌濃巧禮盒-44入", price: 1480, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/ym6.png?raw=true" }
             ]},
             { brand: "NY Perfect Cheese", image: "https://github.com/manmangoshop/photo/blob/main/NYPerfectCheese.png?raw=true", items: [
-                { id: "NYPC1", name: "起司奶油捲餅-8入", price: 490, life: "至6/23" },
-                { id: "NYPC2", name: "起司奶油捲餅-12入", price: 700, life: "至6/22" }
-            ]},
-            { brand: "Snow Cheese", image: "https://github.com/manmangoshop/photo/blob/main/snowcheese.png?raw=true", items: [
-                { id: "SCW1", name: "起司捲-5入", price: 380, life: "約40天" },
-                { id: "SCW2", name: "起司捲-8入", price: 580, life: "約40天" },
-                { id: "SCW3", name: "起司捲-12入", price: 780, life: "約40天" },
-                { id: "SCW4", name: "起司捲-5入（機場限定版-無紙袋）", price: 380, life: "約40天" },
-                { id: "SCW5", name: "起司捲-8入（機場限定版-無紙袋）", price: 550, life: "至6/30" },
-                { id: "SCW6", name: "起司捲-12入（機場限定版-無紙袋）", price: 780, life: "約40天" },
-                { id: "SCW7", name: "起司餅乾-8入", price: 720, life: "約40天" },
-                { id: "SCW7", name: "起司餅乾-12入", price: 1050, life: "約40天" }
-            ]},
-            { brand: "Yoku Moku", image: "https://github.com/manmangoshop/photo/blob/main/YokuMoku.png?raw=true", items: [
-                { id: "YM1", name: "雪茄蛋捲-14入", price: 520, life: "約30天" },
-                { id: "YM2", name: "雪茄蛋捲-20入", price: 820, life: "約30天" },
-                { id: "YM3", name: "雪茄蛋捲-30入", price: 1180, life: "約30天" },
-                { id: "YM4", name: "臻饌濃巧禮盒-27入", price: 980, life: "約30天" },
-                { id: "YM6", name: "喜饌濃巧禮盒-44入", price: 1450, life: "約30天" }
-            ]},
-            {
-            brand: "神戶風月堂", 
-                image: "https://github.com/manmangoshop/photo/blob/main/fugetsudo.png?raw=true",
-                items: [
-                    { id: "KF1", name: "法蘭酥-6入（香草、草莓、可可）", price: 380, life: "約60天" },
-                    { id: "KF3", name: "法蘭酥-8入（香草、草莓、可可）", price: 480, life: "約60天" },
-                    { id: "KF5", name: "法蘭酥-12入（香草、草莓、可可）", price: 700, life: "約60天" },
-                    { id: "KF2", name: "法蘭酥-6入（紅茶、抹茶、咖啡）", price: 380, life: "約60天" },
-                    { id: "KF4", name: "法蘭酥-8入（紅茶、抹茶、咖啡）", price: 480, life: "約60天" },
-                    { id: "KF6", name: "法蘭酥-12入（紅茶、抹茶、咖啡）", price: 700, life: "約60天" }
-                ]
-            },
-            { 
-                brand: "神戶風月堂-Lespoir", 
-                image: "https://github.com/manmangoshop/photo/blob/main/fugetsudo-lespoir.png?raw=true",
-                items: [
-                    { id: "KF9", name: "奶油薄餅 24入", price: 550, life: "約90天" },
-                    { id: "KF10", name: "奶油薄餅 36入", price: 780, life: "約90天" },
-                    { id: "KF11", name: "杏仁薄餅 15入", price: 550, life: "約90天" },
-                    { id: "KF12", name: "杏仁薄餅 24入", price: 780, life: "約90天" },
-                    { id: "KF13", name: "奶油葡萄厚夾心餅乾 7入", price: 620, life: "約90天" }
-                ]
-            },
-            { brand: "Tulip Rose", image: "https://github.com/manmangoshop/photo/blob/main/TulipRose.png?raw=true", items: [
-                { id: "TP1", name: "鬱金香玫瑰餅乾-4入（奶油x2｜起司x2）", price: 380, life: "約7天" },
-                { id: "TP2", name: "鬱金香玫瑰餅乾-6入（奶油x3｜起司x3）", price: 520, life: "約7天" },
-                { id: "TP3", name: "鬱金香玫瑰餅乾-6入（草莓奶油）", price: 580, life: "約7天" },
-                { id: "TP4", name: "鬱金香玫瑰餅乾-9入（奶油x3｜起司x3|草莓奶油x3）", price: 780, life: "約7天" },
-                { id: "TP5", name: "鬱金香玫瑰餅乾-6入（抹茶）", price: 600, life: "約7天" },
-                { id: "TP6", name: "綜合禮盒-18入", price: 1280, life: "約7天" }
-            ]},
-             { brand: "Henri Charpentier", image: "https://github.com/manmangoshop/photo/blob/main/HenriCharpentier.png?raw=true", items: [
-                { id: "HC1", name: "費南雪-5入", price: 380, life: "約30天" },
-                { id: "HC2", name: "費南雪-8入", price: 550, life: "約30天" },
-                { id: "HC3", name: "費南雪-8入(金磚版-無紙袋)", price: 550, life: "約30天" },
-                { id: "HC4", name: "綜合禮盒-8入（費南雪x4|瑪德蓮x4）", price: 550, life: "約30天" },
-                { id: "HC5", name: "綜合禮盒-12入（費南雪x6|瑪德蓮x6）", price: 820, life: "約30天" }
-            ]},
-            { brand: "God Bless Butter", image: "https://github.com/manmangoshop/photo/blob/main/GodBlessButter.png?raw=true", items: [
-                { id: "GB1", name: "奶油白巧克力捲心酥-10入", price: 490, life: "約30天" },
-                { id: "GB2", name: "奶油白巧克力捲心酥-18入", price: 780, life: "約30天" },
-                { id: "GB3", name: "奶油白巧克力捲心酥-25入", price: 1050, life: "約30天" }
-            ]},
-             { brand: "祇園辻利", image: "https://github.com/manmangoshop/photo/blob/main/giontsujiri.png?raw=true", items: [
-                { id: "TJR1", name: "つじりの里（奶油蛋捲 × 抹茶內餡）8入", price: 320, life: "約60天" },
-                { id: "TJR2", name: "つじりの里（奶油蛋捲 × 抹茶內餡）15入", price: 450, life: "約60天" },
-                { id: "TJR3", name: "つじりの里（奶油蛋捲 × 抹茶內餡）21入經濟包", price: 490, life: "約60天" },
-                { id: "TJR4", name: "ぎおんの里（抹茶蛋捲 × 奶油內餡) 8入", price: 320, life: "約60天" },
-                { id: "TJR5", name: "ぎおんの里（抹茶蛋捲 × 奶油內餡) 15入", price: 450, life: "約60天" },
-                { id: "TJR6", name: "ぎおんの里（抹茶蛋捲 × 奶油內餡) 21入經濟包", price: 490, life: "約60天" },
-                { id: "TJR7", name: "雙色綜合 24入", price: 750, life: "約60天" }
-            ]},
-            { brand: "IKKYU 一休", image: "https://github.com/manmangoshop/photo/blob/main/ikkyu.png?raw=true", items: [
-                { id: "IK1", name: "抹茶白巧克力脆餅 5入", price: 380, life: "約14天" },
-                { id: "IK2", name: "抹茶白巧克力脆餅 8入", price: 520, life: "約14天" }
-
-            ]},
-            { brand: "Sabrina-薫るバタ", image: "https://github.com/manmangoshop/photo/blob/main/Sabrina.png?raw=true", items: [
-                { id: "SAB1", name: "花朵千層酥-6入紙盒", price: 500, life: "約30天" },
-                { id: "SAB2", name: "花朵千層酥-8入經濟包", price: 580, life: "約30天" }
-            ]},
-            { brand: "N.Y.C. SAND", image: "https://github.com/manmangoshop/photo/blob/main/NYCSAND.png?raw=true", items: [
-                { id: "NYCS1", name: "原味焦糖巧克力夾心-4入", price: 350, life: "約7天" },
-                { id: "NYCS2", name: "原味焦糖巧克力夾心-8入", price: 620, life: "約7天" },
-                { id: "NYCS3", name: "原味焦糖巧克力夾心-12入", price: 880, life: "約7天" }
-            ]},
-            { brand: "Fondan", image: "https://github.com/manmangoshop/photo/blob/main/fondan.png?raw=true", items: [
-                { id: "FD1", name: "焦糖流心餅乾-5入", price: 580, life: "約7天" },
-                { id: "FD2", name: "焦糖流心餅乾-10入", price: 980, life: "約7天" }
-            ]},
-             { brand: "源吉兆庵", image: "https://github.com/manmangoshop/photo/blob/main/kitchoan.png?raw=true", items: [
-                { id: "KO1", name: "奶油夾心煎餅-原味6入", price: 480, life: "約40天" },
-                { id: "KO3", name: "奶油夾心煎餅-抹茶6入", price: 480, life: "約40天" },
-                { id: "KO2", name: "奶油夾心煎餅-原味12入", price: 920, life: "約40天" },
-                { id: "KO5", name: "奶油夾心煎餅-綜合12入", price: 920, life: "約40天" },
-                { id: "KO6", name: "織部錦-6入", price: 550, life: "約14天" },
-                { id: "KO7", name: "織部錦-8入", price: 700, life: "約14天" },
-                { id: "KO8", name: "織部錦-12入", price: 1080, life: "約14天" }
-            ]},
-            { brand: "Sugar Butter Tree", image: "https://github.com/manmangoshop/photo/blob/main/SugarButterTree.png?raw=true", items: [
-                { id: "SBT1", name: "招牌奶油夾心餅-7入", price: 280, life: "約50天" },
-                { id: "SBT2", name: "招牌奶油夾心餅-14入", price: 520, life: "約50天" },
-                { id: "SBT3", name: "招牌奶油夾心餅-21入", price: 750, life: "約50天" },
-                { id: "SBT5", name: "綜合夾心餅乾（原＋葡）-12入", price: 520, life: "約50天" },
-                { id: "SBT6", name: "綜合夾心餅乾-16入", price: 680, life: "約50天" },
-                { id: "SBT7", name: "綜合夾心餅乾-21入", price: 860, life: "約50天" },
-                { id: "SBT10", name: "招牌夾心餅乾-10入經濟包", price: 340, life: "約50天" },
-                { id: "SBT11", name: "烤布蕾夾心餅乾-10入經濟包", price: 380, life: "至6/29" },
-                { id: "SBT12", name: "草莓夾心餅乾-5入", price: 350, life: "約50天" },
-                { id: "SBT13", name: "草莓夾心餅乾-8入", price: 550, life: "約50天" },
-                { id: "SBT14", name: "麝香葡萄夾心餅乾-10入經濟包", price: 390, life: "約50天" }
-            ]},
-            { brand: "GALETTE au BEURRE", image: "https://github.com/manmangoshop/photo/blob/main/GALETTEauBEURRE.png?raw=true", items: [
-                { id: "MZ6", name: "白色鐵盒-6入（經典奶油厚燒酥餅）", price: 550, life: "約14天" },
-                { id: "MZ7", name: "紅色鐵盒-18入（香草｜可可｜抹茶｜起司）", price: 550, life: "約14天" },
-                { id: "MZ8", name: "鐵灰禮盒-23入（香草｜可可｜抹茶｜起司｜布列塔尼酥餅）", price: 780, life: "約14天" }
-            ]},
-            { brand: "Feuillage", image: "https://github.com/manmangoshop/photo/blob/main/Feuillage.png?raw=true", items: [
-                { id: "MZ1", name: "綜合葉子夾心餅乾-6入", price: 300, life: "約180天" },
-                { id: "MZ2", name: "綜合葉子夾心餅乾-9入", price: 400, life: "約180天" },
-                { id: "MZ3", name: "綜合葉子夾心餅乾-12入", price: 520, life: "約180天" },                
-                { id: "MZ4", name: "綜合葉子夾心餅乾-16入", price: 750, life: "約180天" },                
-                { id: "MZ5", name: "綜合葉子夾心餅乾-20入", price: 950, life: "約180天" }               
-            ]},
-            { brand: "Now on Cheese", image: "https://github.com/manmangoshop/photo/blob/main/nowoncheese.png?raw=true", items: [
-                { id: "NOC1", name: "煙燻起司夾心餅乾-10入", price: 520, life: "約120天" },
-                { id: "NOC2", name: "煙燻起司夾心餅乾-18入", price: 920, life: "約120天" },
-                { id: "NOC3", name: "焦糖夾心餅乾-10入", price: 520, life: "約120天" },
-                { id: "NOC4", name: "焦糖夾心餅乾-18入", price: 920, life: "約120天" },
-                { id: "NOC5", name: "綜合夾心餅乾禮盒-18入", price: 920, life: "約120天" },
-                { id: "NOC6", name: "原味起司蛋糕-6入", price: 580, life: "約14天" },
-                { id: "NOC7", name: "焦糖起司蛋糕-6入", price: 580, life: "約14天" },
-                { id: "NOC8", name: "綜合起司蛋糕-10入（原味x5｜焦糖x5）", price: 950, life: "約14天" },
-                { id: "NOC9", name: "巧克力起司蛋糕-6入", price: 580, life: "約14天" },
-                { id: "NOC10", name: "綜合起司蛋糕-10入（原味x5｜巧克力x5）", price: 950, life: "約14天" }
+                { id: "NYPC1", name: "起司奶油捲餅-8入", price: 530, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/nypc1.png?raw=true" },
+                { id: "NYPC2", name: "起司奶油捲餅-12入", price: 720, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/nypc2.png?raw=true" },
+                { id: "NYPC3", name: "起司奶油捲餅-15入", price: 900, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/nypc3.png?raw=true" },
+                { id: "NYPC4", name: "起司奶油捲餅-18入", price: 1080, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/nypc4.png?raw=true" }
             ]},
             { brand: "Tokyo Rich Cheesecake", image: "https://github.com/manmangoshop/photo/blob/main/TokyoRichCheese.png?raw=true", items: [
-                    { id: "BN2", name: "起司蛋糕條-10入", price: 590, life: "約30天" },
-                    { id: "BN3", name: "起司蛋糕條（抹茶）-6入", price: 420, life: "約30天" },
-                    { id: "BN4", name: "起司蛋糕條（草莓）-6入", price: 420, life: "約30天" }
-                ]
-            },
-             { brand: "本高砂屋", image: "https://github.com/manmangoshop/photo/blob/main/Hontaka.png?raw=true", items: [
-                { id: "HT1", name: "法式薄酥餅-18枚", price: 290, life: "約100天" },
-                { id: "HT2", name: "法式薄酥餅-36枚", price: 480, life: "約100天" },
-                { id: "HT3", name: "法式薄酥餅-56枚", price: 680, life: "約100天" },
-                { id: "HT4", name: "綜合禮盒-28枚", price: 680, life: "約100天" },
-                { id: "HT5", name: "綜合禮盒-38枚", price: 850, life: "約100天" }
+                { id: "BN2", name: "起司蛋糕條-10入", price: 560, life: "約35天", img: "https://github.com/manmangoshop/product/blob/main/bn2.png?raw=true" },
+                { id: "BN3", name: "起司蛋糕條（抹茶）-6入", price: 420, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/bn3.png?raw=true" },
+                { id: "BN4", name: "起司蛋糕條（草莓）-6入", price: 420, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/bn4.png?raw=true" }
+            ]},
+            { brand: "神戶風月堂", image: "https://github.com/manmangoshop/photo/blob/main/fugetsudo.png?raw=true", items: [
+                { id: "KF1", name: "法蘭酥-6入（香草、草莓、可可）", price: 380, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/kf1.png?raw=true" },
+                { id: "KF3", name: "法蘭酥-8入（香草、草莓、可可）", price: 480, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/kf2.png?raw=true" },
+                { id: "KF5", name: "法蘭酥-12入（香草、草莓、可可）", price: 750, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/kf3.png?raw=true" },
+                { id: "KF2", name: "法蘭酥-6入（紅茶、抹茶、咖啡）", price: 380, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/kf4.png?raw=true" },
+                { id: "KF4", name: "法蘭酥-8入（紅茶、抹茶、咖啡）", price: 480, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/kf5.png?raw=true" },
+                { id: "KF6", name: "法蘭酥-12入（紅茶、抹茶、咖啡）", price: 750, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/kf6.png?raw=true" },
+                { id: "KF7", name: "三麗鷗3入組（香草、草莓、可可）", price: 650, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/kf7.png?raw=true" }
+
+            ]},
+            { brand: "神戶風月堂-Lespoir", image: "https://github.com/manmangoshop/photo/blob/main/fugetsudo-lespoir.png?raw=true", items: [
+                { id: "KF9", name: "奶油薄餅 24入", price: 600, life: "約90天", img: "https://github.com/manmangoshop/product/blob/main/kf9.png?raw=true" },
+                { id: "KF10", name: "奶油薄餅 36入", price: 800, life: "約90天", img: "https://github.com/manmangoshop/product/blob/main/kf10.png?raw=true" },
+                { id: "KF11", name: "杏仁薄餅 15入", price: 600, life: "約90天", img: "https://github.com/manmangoshop/product/blob/main/kf11.png?raw=true" },
+                { id: "KF12", name: "杏仁薄餅 24入", price: 800, life: "約90天", img: "https://github.com/manmangoshop/product/blob/main/kf12.png?raw=true" },
+                { id: "KF13", name: "奶油葡萄厚夾心餅乾 7入", price: 620, life: "約90天", img: "https://github.com/manmangoshop/product/blob/main/kf13.png?raw=true" }
+            ]},
+            { brand: "小倉山莊-山春秋", image: "https://github.com/manmangoshop/photo/blob/main/ogurasansou.png?raw=true", items: [
+                { id: "OS4", name: "山春秋-10入經濟包", price: 500, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/os4.png?raw=true" },
+                { id: "OS5", name: "山春秋-20入經濟包", price: 900, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/os5.png?raw=true" },
+                { id: "OS1", name: "山春秋-8入", price: 520, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/os1.png?raw=true" },
+                { id: "OS2", name: "山春秋-12入鐵盒", price: 820, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/os2.png?raw=true" },
+                { id: "OS3", name: "山春秋-16入鐵盒", price: 1050, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/os3.png?raw=true" }
+            ]},
+            { brand: "小倉山莊-百人一首", image: "https://github.com/manmangoshop/photo/blob/main/ogurasansou2.png?raw=true", items: [
+                { id: "OS6", name: "百人一首-50入", price: 550, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/os6.png?raw=true" },
+                { id: "OS7", name: "百人一首-100入", price: 1050, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/os7.png?raw=true" }
+            ]},
+            { brand: "小倉山莊-嵯峨乃燒 ", image: "https://github.com/manmangoshop/photo/blob/main/ogurasansou3.png?raw=true", items: [
+                { id: "OS13", name: "嵯峨乃燒 -11入", price: 580, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/os13.png?raw=true" },
+                { id: "OS14", name: "嵯峨乃燒 -15入鐵盒", price: 900, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/os14.png?raw=true" },
+                { id: "OS15", name: "嵯峨乃燒 -21入經濟包", price: 720, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/os15.png?raw=true" }
+            ]},
+            { brand: "小倉山莊-無撰別", image: "https://github.com/manmangoshop/photo/blob/main/ogurasansou-random-cut.png?raw=true", items: [
+                { id: "OS9", name: "嵯峨乃燒(甜醬油)-250g", price: 300, life: "約90天", img: "https://github.com/manmangoshop/product/blob/main/os9.png?raw=true" },
+                { id: "OS10", name: "定家之月(蝦子)-250g", price: 300, life: "約90天", img: "https://github.com/manmangoshop/product/blob/main/os10.png?raw=true" },
+                { id: "OS11", name: "定家之月(和三盆糖)-250g", price: 300, life: "約90天", img: "https://github.com/manmangoshop/product/blob/main/os11.png?raw=true" },
+                { id: "OS12", name: "定家之月(沙拉薄鹽)-250g", price: 300, life: "約90天", img: "https://github.com/manmangoshop/product/blob/main/os12.png?raw=true" }
+            ]},
+            { brand: "God Bless Butter", image: "https://github.com/manmangoshop/photo/blob/main/GodBlessButter.png?raw=true", items: [
+                { id: "GB1", name: "奶油白巧克力捲心酥-10入", price: 490, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/gb1.png?raw=true" },
+                { id: "GB2", name: "奶油白巧克力捲心酥-18入", price: 780, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/gb2.png?raw=true" },
+                { id: "GB3", name: "奶油白巧克力捲心酥-25入", price: 1050, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/gb2.png?raw=true" }
+            ]},
+            { brand: "Sabrina-薫るバタ", image: "https://github.com/manmangoshop/photo/blob/main/Sabrina.png?raw=true", items: [
+                { id: "SAB1", name: "花朵千層酥-6入紙盒", price: 500, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/sab1.png?raw=true" },
+                { id: "SAB2", name: "花朵千層酥-8入經濟包", price: 580, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/sab2.png?raw=true" }
+            ]},
+            { brand: "Sugar Butter Tree", image: "https://github.com/manmangoshop/photo/blob/main/SugarButterTree.png?raw=true", items: [
+                { id: "SBT1", name: "奶油夾心餅-7入", price: 280, life: "約50天", img: "https://github.com/manmangoshop/product/blob/main/sbt1.png?raw=true" },
+                { id: "SBT2", name: "奶油夾心餅-14入", price: 550, life: "約50天", img: "https://github.com/manmangoshop/product/blob/main/sbt2.png?raw=true" },
+                { id: "SBT3", name: "奶油夾心餅-18入", price: 700, life: "約50天", img: "https://github.com/manmangoshop/product/blob/main/sbt3.png?raw=true" },
+                { id: "SBT8", name: "史努比禮盒（原＋草莓）-12入", price: 720, life: "約50天", img: "https://github.com/manmangoshop/product/blob/main/sbt8.png?raw=true" },
+                { id: "SBT9", name: "史努比禮盒（原＋草莓）-16入", price: 1050, life: "約50天", img: "https://github.com/manmangoshop/product/blob/main/sbt9.png?raw=true" },
+                { id: "SBT10", name: "奶油夾心餅乾-10入經濟包", price: 340, life: "約50天", img: "https://github.com/manmangoshop/product/blob/main/sbt10.png?raw=true" },
+                { id: "SBT14", name: "麝香葡萄夾心餅乾-10入經濟包", price: 390, life: "約50天", img: "https://github.com/manmangoshop/product/blob/main/sbt14.png?raw=true" },
+                { id: "SBT15", name: "綜合夾心餅乾（原+葡）-12入", price: 550, life: "約50天", img: "https://github.com/manmangoshop/product/blob/main/sbt15.png?raw=true" },
+                { id: "SBT16", name: "綜合夾心餅乾（原+葡）-16入", price: 680, life: "約50天", img: "https://github.com/manmangoshop/product/blob/main/sbt16.png?raw=true" },
+                { id: "SBT17", name: "綜合夾心餅乾（原+葡）-21入", price: 860, life: "約50天", img: "https://github.com/manmangoshop/product/blob/main/sbt17.png?raw=true" }
+            ]},
+            { brand: "源吉兆庵", image: "https://github.com/manmangoshop/photo/blob/main/kitchoan.png?raw=true", items: [
+                { id: "KO1", name: "奶油夾心煎餅-原味6入", price: 480, life: "約40天", img: "https://github.com/manmangoshop/product/blob/main/ko1.png?raw=true" },
+                { id: "KO3", name: "奶油夾心煎餅-抹茶6入", price: 480, life: "約40天", img: "https://github.com/manmangoshop/product/blob/main/ko3.png?raw=true" },
+                { id: "KO2", name: "奶油夾心煎餅-原味12入", price: 920, life: "約40天", img: "https://github.com/manmangoshop/product/blob/main/ko2.png?raw=true" },
+                { id: "KO4", name: "奶油夾心煎餅-抹茶12入", price: 980, life: "約40天", img: "https://github.com/manmangoshop/product/blob/main/ko4.png?raw=true" },
+                { id: "KO5", name: "奶油夾心煎餅-綜合12入", price: 980, life: "約40天", img: "https://github.com/manmangoshop/product/blob/main/ko5.png?raw=true" },
+                { id: "KO6", name: "織部錦-6入", price: 580, life: "約14天", img: "https://github.com/manmangoshop/product/blob/main/ko6.png?raw=true" },
+                { id: "KO7", name: "織部錦-8入", price: 750, life: "約14天", img: "https://github.com/manmangoshop/product/blob/main/ko7.png?raw=true" },
+                { id: "KO8", name: "織部錦-12入", price: 1080, life: "約14天", img: "https://github.com/manmangoshop/product/blob/main/ko8.png?raw=true" },
+                { id: "KO13", name: "清水白桃-2入", price: 920, life: "約40天", img: "https://github.com/manmangoshop/product/blob/main/ko13.png?raw=true" },
+                { id: "KO14", name: "清水白桃-3入", price: 1280, life: "約40天", img: "https://github.com/manmangoshop/product/blob/main/ko14.png?raw=true" },
+                { id: "KO15", name: "清水白桃-4入", price: 1580, life: "約40天", img: "https://github.com/manmangoshop/product/blob/main/ko15.png?raw=true" }
+            ]},
+            { brand: "Happy Turn's", image: "https://github.com/manmangoshop/photo/blob/main/Happyturns.png?raw=true", items: [
+                { id: "HB1", name: "米果2入組（和三盆糖＋鹽奶油）", price: 620, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/hb1.png?raw=true" },
+                { id: "HB2", name: "米果2入組（和三盆糖＋起司）", price: 620, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/hb2.png?raw=true" },
+                { id: "HB3", name: "米果2入組（和三盆糖＋焦糖巧克力）", price: 620, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/hb3.png?raw=true" },
+                { id: "HB4", name: "米果2入組（起司＋鹽奶油）", price: 620, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/hb4.png?raw=true" },
+                { id: "HB5", name: "米果2入組（起司＋焦糖巧克力）", price: 620, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/hb5.png?raw=true" },
+                { id: "HB6", name: "米果2入組（焦糖巧克力＋鹽奶油）", price: 620, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/hb6.png?raw=true" },
+                { id: "HB7", name: "精緻米果禮盒-30入", price: 880, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/hb7.png?raw=true" }
+            ]},
+            { brand: "然花超院", image: "https://github.com/manmangoshop/photo/blob/main/zenkashoin.png?raw=true", items: [
+                { id: "ZK3", name: "綜合幻月-8入(奶油＋抹茶)", price: 720, life: "約40天", img: "https://github.com/manmangoshop/product/blob/main/zk3.png?raw=true" },
+                { id: "ZK6", name: "綜合幻月-8入(奶油＋抹茶)", price: 980, life: "約40天", img: "https://github.com/manmangoshop/product/blob/main/zk6.png?raw=true" }
+            ]},
+            { brand: "Henri Charpentier", image: "https://github.com/manmangoshop/photo/blob/main/HenriCharpentier.png?raw=true", items: [
+                { id: "HC1", name: "費南雪-5入", price: 380, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/hc1.png?raw=true" },
+                { id: "HC2", name: "費南雪-8入", price: 550, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/hc2.png?raw=true" },
+                { id: "HC3", name: "費南雪-8入(金磚版-無紙袋)", price: 550, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/hc3.jpg?raw=true" },
+                { id: "HC4", name: "綜合禮盒-8入（費南雪x4|瑪德蓮x4）", price: 550, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/hc4.png?raw=true" },
+                { id: "HC5", name: "綜合禮盒-12入（費南雪x6|瑪德蓮x6）", price: 820, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/hc5.png?raw=true" }
             ]},
             { brand: "Pista & Tokyo", image: "https://github.com/manmangoshop/photo/blob/main/PistaTokyo.png?raw=true", items: [
-                { id: "PT1", name: "開心果夾心餅-5入", price: 490, life: "約60天" },
-                { id: "PT2", name: "開心果覆盆子夾心餅-5入", price: 490, life: "約60天" },
-                { id: "PT3", name: "開心果夾心餅-綜合10入", price: 880, life: "約60天" },
-                { id: "PT4", name: "開心果夾心餅-綜合14入", price: 1180, life: "約60天" }
+                { id: "PT1", name: "開心果夾心餅-5入", price: 490, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/pt1.png?raw=true" },
+                { id: "PT2", name: "開心果覆盆子夾心餅-5入", price: 490, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/pt2.png?raw=true" },
+                { id: "PT3", name: "開心果夾心餅-綜合10入", price: 880, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/pt3.png?raw=true" },
+                { id: "PT4", name: "開心果夾心餅-綜合14入", price: 1180, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/pt4.png?raw=true" }
             ]},
             { brand: "蝦仙貝之里", image: "https://github.com/manmangoshop/photo/blob/main/ebisato.png?raw=true", items: [
-                { id: "ES1", name: "名古屋綜合蝦餅-280g", price: 370, life: "約90天" }
+                { id: "ES1", name: "名古屋綜合蝦餅-280g", price: 370, life: "約90天", img: "https://github.com/manmangoshop/product/blob/main/es1.png?raw=true" }
+            ]},
+            { brand: "Now on Cheese", image: "https://github.com/manmangoshop/photo/blob/main/nowoncheese.png?raw=true", items: [
+                { id: "NOC1", name: "煙燻起司夾心餅乾-10入", price: 500, life: "約100天", img: "https://github.com/manmangoshop/product/blob/main/noc1.png?raw=true" },
+                { id: "NOC3", name: "焦糖夾心餅乾-10入", price: 500, life: "約100天", img: "https://github.com/manmangoshop/product/blob/main/noc3.png?raw=true" },
+                { id: "NOC5", name: "綜合夾心餅乾禮盒-18入", price: 880, life: "約100天", img: "https://github.com/manmangoshop/product/blob/main/noc5.png?raw=true" },
+                { id: "NOC6", name: "原味起司蛋糕-6入", price: 580, life: "約14天", img: "https://github.com/manmangoshop/product/blob/main/noc6.png?raw=true" },
+                { id: "NOC7", name: "焦糖起司蛋糕-6入", price: 580, life: "約14天", img: "https://github.com/manmangoshop/product/blob/main/noc7.png?raw=true" },
+                { id: "NOC8", name: "綜合起司蛋糕-10入（原味x5｜焦糖x5）", price: 950, life: "約14天", img: "https://github.com/manmangoshop/product/blob/main/noc8.png?raw=true" },
+                { id: "NOC9", name: "巧克力起司蛋糕-6入", price: 580, life: "約14天", img: "https://github.com/manmangoshop/product/blob/main/noc9.png?raw=true" },
+                { id: "NOC10", name: "綜合起司蛋糕-10入（原味x5｜巧克力x5）", price: 950, life: "約14天", img: "https://github.com/manmangoshop/product/blob/main/noc10.png?raw=true" }
             ]},
             { brand: "Tokyo Campanella", image: "https://github.com/manmangoshop/photo/blob/main/TokyoCampanella.png?raw=true", items: [
-                { id: "TC2", name: "巧克力夾心餅乾-10入", price: 720, life: "約30天" }
-            ]},            
-            { brand: "鎌倉五郎", image: "https://github.com/manmangoshop/photo/blob/main/kamakuragoro.png?raw=true", items: [
-                { id: "KG1", name: "鎌倉半月（抹茶x3｜小倉x3）-5入", price: 320, life: "約14天" },
-                { id: "KG2", name: "鎌倉半月（抹茶x5｜小倉x5）-10入", price: 600, life: "約14天" },
-                { id: "KG3", name: "鎌倉半月（櫻茶限定版）-5入", price: 320, life: "至6/28" },
-                { id: "KG4", name: "鎌倉半月（櫻茶限定版）-10入", price: 600, life: "約14天" }
+                { id: "TC2", name: "巧克力夾心餅乾-10入", price: 720, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/tc2.png?raw=true" },
+                { id: "TC3", name: "巧克力夾心餅乾-綜合16入", price: 1050, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/tc3.png?raw=true" }
             ]},
+            { brand: "鎌倉五郎", image: "https://github.com/manmangoshop/photo/blob/main/kamakuragoro.png?raw=true", items: [
+                { id: "KG1", name: "鎌倉半月（抹茶x3｜小倉x3）-5入", price: 320, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/kg1.png?raw=true" },
+                { id: "KG2", name: "鎌倉半月（抹茶x5｜小倉x5）-10入", price: 580, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/kg2.png?raw=true" },
+                { id: "KG5", name: "鎌倉半月-花生5入", price: 320, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/kg5.png?raw=true" },
+                { id: "KG6", name: "鎌倉半月-白桃5入", price: 320, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/kg6.png?raw=true" },
+                { id: "KG7", name: "鎌倉半月-白桃10入", price: 600, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/kg7.png?raw=true" },
+                { id: "KG8", name: "鎌倉半月（抹茶x2｜小倉x3|花生x5）-綜合10入", price: 600, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/kg8.png?raw=true" },
+                { id: "KG9", name: "鎌倉半月（抹茶x5｜小倉x5|花生x5）-綜合15入", price: 920, life: "約30天", img: "https://github.com/manmangoshop/product/blob/main/kg9.png?raw=true" }
+            ]}, 
+            { brand: "Brulee Merize", image: "https://github.com/manmangoshop/photo/blob/main/BruleeMerize.png?raw=true", items: [
+                { id: "BM1", name: "烤布蕾奶油塔-5入", price: 500, life: "約20天", img: "https://github.com/manmangoshop/product/blob/main/bm1.png?raw=true" },
+                { id: "BM2", name: "烤布蕾奶油塔-8入", price: 750, life: "約20天", img: "https://github.com/manmangoshop/product/blob/main/bm2.png?raw=true" },
+                { id: "BM3", name: "烤布蕾千層塔-5入", price: 450, life: "約20天", img: "https://github.com/manmangoshop/product/blob/main/bm3.png?raw=true" },
+                { id: "BM4", name: "烤布蕾千層塔-10入", price: 850, life: "約20天", img: "https://github.com/manmangoshop/product/blob/main/bm4.png?raw=true" },
+                { id: "BM5", name: "烤布蕾費南雪-5入", price: 450, life: "約20天", img: "https://github.com/manmangoshop/product/blob/main/bm5.png?raw=true" },
+                { id: "BM6", name: "綜合禮盒-15入（奶油塔x5｜千層派x6｜費南雪x4）", price: 1250, life: "約20天", img: "https://github.com/manmangoshop/product/blob/main/bm6.png?raw=true" },
+                { id: "BM7", name: "烤布蕾奶油塔-開心果5入", price: 520, life: "約20天", img: "https://github.com/manmangoshop/product/blob/main/bm7.png?raw=true" }
+            ]},
+            { brand: "Tulip Rose", image: "https://github.com/manmangoshop/photo/blob/main/TulipRose.png?raw=true", items: [
+                { id: "TP1", name: "鬱金香玫瑰餅乾-4入（奶油x2｜起司x2）", price: 380, life: "約20天", img: "https://github.com/manmangoshop/product/blob/main/tp1.png?raw=true" },
+                { id: "TP2", name: "鬱金香玫瑰餅乾-6入（奶油x3｜起司x3）", price: 520, life: "約20天", img: "https://github.com/manmangoshop/product/blob/main/tp2.png?raw=true" },
+                { id: "TP3", name: "鬱金香玫瑰餅乾-6入（白桃奶油）", price: 580, life: "約20天", img: "https://github.com/manmangoshop/product/blob/main/tp3.png?raw=true" },
+                { id: "TP4", name: "鬱金香玫瑰餅乾-9入（奶油x3｜起司x3|草莓奶油x3）", price: 780, life: "約20天", img: "https://github.com/manmangoshop/product/blob/main/tp4.png?raw=true" },
+                { id: "TP5", name: "鬱金香玫瑰餅乾-6入（抹茶）", price: 600, life: "約20天", img: "https://github.com/manmangoshop/product/blob/main/tp5.png?raw=true" },
+                { id: "TP6", name: "綜合禮盒-18入", price: 1280, life: "約20天", img: "https://github.com/manmangoshop/product/blob/main/tp6.png?raw=true" }
+            ]},
+            { brand: "GALETTE au BEURRE", image: "https://github.com/manmangoshop/photo/blob/main/GALETTEauBEURRE.png?raw=true", items: [
+                { id: "MZ6", name: "白色鐵盒-6入（經典奶油厚燒酥餅）", price: 550, life: "約14天", img: "https://github.com/manmangoshop/product/blob/main/mz6.png?raw=true" },
+                { id: "MZ7", name: "紅色鐵盒-18入（香草｜可可｜抹茶｜起司）", price: 550, life: "約14天", img: "https://github.com/manmangoshop/product/blob/main/mz7.png?raw=true" },
+                { id: "MZ8", name: "鐵灰禮盒-23入（香草｜可可｜抹茶｜起司｜布列塔尼酥餅）", price: 780, life: "約14天", img: "https://github.com/manmangoshop/product/blob/main/mz8.png?raw=true" }
+            ]},
+            { brand: "N.Y.C. SAND", image: "https://github.com/manmangoshop/photo/blob/main/NYCSAND.png?raw=true", items: [
+                { id: "NYCS1", name: "焦糖巧克力夾心-4入", price: 350, life: "約7天", img: "https://github.com/manmangoshop/product/blob/main/nycs1.png?raw=true" },
+                { id: "NYCS2", name: "焦糖巧克力夾心-8入", price: 650, life: "約7天", img: "https://github.com/manmangoshop/product/blob/main/nycs2.png?raw=true" },
+                { id: "NYCS3", name: "焦糖巧克力夾心-12入", price: 880, life: "約7天", img: "https://github.com/manmangoshop/product/blob/main/nycs3.png?raw=true" }
+            ]},
+            { brand: "祇園辻利", image: "https://github.com/manmangoshop/photo/blob/main/giontsujiri.png?raw=true", items: [
+                { id: "TJR1", name: "抹茶捲心酥（奶油蛋捲 × 抹茶內餡）8入", price: 320, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/tjr1.png?raw=true" },
+                { id: "TJR2", name: "抹茶捲心酥（奶油蛋捲 × 抹茶內餡）15入", price: 450, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/tjr2.png?raw=true" },
+                { id: "TJR3", name: "抹茶捲心酥（奶油蛋捲 × 抹茶內餡）21入經濟包", price: 490, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/tjr3.png?raw=true" },
+                { id: "TJR4", name: "抹茶奶油捲心酥（抹茶蛋捲 × 奶油內餡) 8入", price: 320, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/tjr4.png?raw=true" },
+                { id: "TJR5", name: "抹茶奶油捲心酥（抹茶蛋捲 × 奶油內餡) 15入", price: 450, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/tjr5.png?raw=true" },
+                { id: "TJR6", name: "抹茶奶油捲心酥（抹茶蛋捲 × 奶油內餡) 21入經濟包", price: 490, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/tjr6.png?raw=true" },
+                { id: "TJR7", name: "雙色綜合 24入", price: 750, life: "約60天", img: "https://github.com/manmangoshop/product/blob/main/tjr7.png?raw=true" }
+            ]},
+            { brand: "IKKYU 一休", image: "https://github.com/manmangoshop/photo/blob/main/ikkyu.png?raw=true", items: [
+                { id: "IK1", name: "抹茶起司脆餅 5入", price: 380, life: "約20天", img: "https://github.com/manmangoshop/product/blob/main/ik1.png?raw=true" },
+                { id: "IK2", name: "抹茶起司脆餅 8入", price: 520, life: "約20天", img: "https://github.com/manmangoshop/product/blob/main/ik2.png?raw=true" },
+                { id: "IK3", name: "抹茶起司脆餅 12入", price: 780, life: "約20天", img: "https://github.com/manmangoshop/product/blob/main/ik2.png?raw=true" },
+                { id: "IK4", name: "抹茶起司脆餅 15入", price: 980, life: "約20天", img: "https://github.com/manmangoshop/product/blob/main/ik2.png?raw=true" }
+            ]},
+            { brand: "Snow Cheese", image: "https://github.com/manmangoshop/photo/blob/main/snowcheese.png?raw=true", items: [
+                { id: "SCW1", name: "起司捲-5入", price: 380, life: "約40天", img: "https://github.com/manmangoshop/product/blob/main/scw4.png?raw=true" },
+                { id: "SCW2", name: "起司捲-8入", price: 580, life: "約40天", img: "https://github.com/manmangoshop/product/blob/main/scw2.png?raw=true" },
+                { id: "SCW3", name: "起司捲-12入", price: 780, life: "約40天", img: "https://github.com/manmangoshop/product/blob/main/scw3.png?raw=true" },
+                { id: "SCW4", name: "起司捲-5入（機場限定版-無紙袋）", price: 380, life: "約40天", img: "https://github.com/manmangoshop/product/blob/main/scw4.png?raw=true" },
+                { id: "SCW5", name: "起司捲-8入（機場限定版-無紙袋）", price: 550, life: "至6/30", img: "https://github.com/manmangoshop/product/blob/main/scw5.png?raw=true" },
+                { id: "SCW6", name: "起司捲-12入（機場限定版-無紙袋）", price: 780, life: "約40天", img: "https://github.com/manmangoshop/product/blob/main/scw6.png?raw=true" },
+                { id: "SCW7", name: "起司餅乾-8入", price: 720, life: "約40天", img: "https://github.com/manmangoshop/product/blob/main/scw7.png?raw=true" },
+                { id: "SCW8", name: "起司餅乾-12入", price: 1050, life: "約40天", img: "https://github.com/manmangoshop/product/blob/main/scw8.png?raw=true" }
+            ]},
+            { brand: "Fondan", image: "https://github.com/manmangoshop/photo/blob/main/fondan.png?raw=true", items: [
+                { id: "FD1", name: "焦糖流心餅乾-5入", price: 580, life: "約7天", img: "https://github.com/manmangoshop/product/blob/main/fd1.png?raw=true" },
+                { id: "FD2", name: "焦糖流心餅乾-10入", price: 980, life: "約7天", img: "https://github.com/manmangoshop/product/blob/main/fd2.png?raw=true" }
+            ]},
+            { brand: "Feuillage", image: "https://github.com/manmangoshop/photo/blob/main/Feuillage.png?raw=true", items: [
+                { id: "MZ1", name: "綜合葉子夾心餅乾-6入", price: 300, life: "約180天", img: "https://github.com/manmangoshop/product/blob/main/mz1.png?raw=true" },
+                { id: "MZ2", name: "綜合葉子夾心餅乾-9入", price: 400, life: "約180天", img: "https://github.com/manmangoshop/product/blob/main/mz2.png?raw=true" },
+                { id: "MZ3", name: "綜合葉子夾心餅乾-12入", price: 520, life: "約180天", img: "https://github.com/manmangoshop/product/blob/main/mz3.png?raw=true" },                
+                { id: "MZ4", name: "綜合葉子夾心餅乾-16入", price: 750, life: "約180天", img: "https://github.com/manmangoshop/product/blob/main/mz4.png?raw=true" },                
+                { id: "MZ5", name: "綜合葉子夾心餅乾-20入", price: 950, life: "約180天", img: "https://github.com/manmangoshop/product/blob/main/mz5.png?raw=true" }               
+            ]},
+            { brand: "本高砂屋", image: "https://github.com/manmangoshop/photo/blob/main/Hontaka.png?raw=true", items: [
+                { id: "HT1", name: "法式薄酥餅-18枚", price: 290, life: "約100天", img: "https://github.com/manmangoshop/product/blob/main/ht1.png?raw=true" },
+                { id: "HT2", name: "法式薄酥餅-36枚", price: 480, life: "約100天", img: "https://github.com/manmangoshop/product/blob/main/ht2.png?raw=true" },
+                { id: "HT3", name: "法式薄酥餅-56枚", price: 680, life: "約100天", img: "https://github.com/manmangoshop/product/blob/main/ht3.png?raw=true" },
+                { id: "HT4", name: "綜合禮盒-28枚", price: 680, life: "約100天", img: "https://github.com/manmangoshop/product/blob/main/ht4.png?raw=true" },
+                { id: "HT5", name: "綜合禮盒-38枚", price: 850, life: "約100天", img: "https://github.com/manmangoshop/product/blob/main/ht5.png?raw=true" }
+            ]},           
             { brand: "茅乃舍", image: "https://github.com/manmangoshop/photo/blob/main/kubara.png?raw=true", items: [
-                { id: "KB1", name: "柴魚昆布高湯-5入", price: 160, life: "約180天" },
-                { id: "KB2", name: "柴魚昆布高湯-12入", price: 380, life: "約180天" },
-                { id: "KB4", name: "柴魚昆布高湯（減鹽）-5入", price: 180, life: "約180天" },
-                { id: "KB6", name: "蔬菜高湯-5入", price: 180, life: "約180天" },
-                { id: "KB7", name: "蔬菜高湯-12入", price: 420, life: "約180天" },
-                { id: "KB9", name: "蔬菜高湯（減鹽）-5入", price: 190, life: "約180天" },
-                { id: "KB12", name: "椎茸高湯-5入", price: 220, life: "約180天" },
-                { id: "KB13", name: "椎茸高湯-20入", price: 750, life: "約180天" },
-                { id: "KB14", name: "昆布高湯-5入", price: 180, life: "約180天" },
-                { id: "KB15", name: "昆布高湯-24入", price: 720, life: "約180天" },
-                { id: "KB10", name: "雞高湯-5入", price: 230, life: "約180天" },
-                { id: "KB17", name: "玉子燒-4入", price: 230, life: "約180天" },
-                { id: "KB16", name: "茶碗蒸-4入", price: 280, life: "約180天" }
+                { id: "KB1", name: "柴魚昆布高湯-5入", price: 160, life: "約180天", img: "https://github.com/manmangoshop/product/blob/main/kb1.png?raw=true" },
+                { id: "KB2", name: "柴魚昆布高湯-12入", price: 380, life: "約180天", img: "https://github.com/manmangoshop/product/blob/main/kb2.png?raw=true" },
+                { id: "KB4", name: "柴魚昆布高湯（減鹽）-5入", price: 180, life: "約180天", img: "https://github.com/manmangoshop/product/blob/main/kb4.png?raw=true" },
+                { id: "KB6", name: "蔬菜高湯-5入", price: 180, life: "約180天", img: "https://github.com/manmangoshop/product/blob/main/kb6.png?raw=true" },
+                { id: "KB7", name: "蔬菜高湯-12入", price: 420, life: "約180天", img: "https://github.com/manmangoshop/product/blob/main/kb7.png?raw=true" },
+                { id: "KB9", name: "蔬菜高湯（減鹽）-5入", price: 190, life: "約180天", img: "https://github.com/manmangoshop/product/blob/main/kb9.png?raw=true" },
+                { id: "KB12", name: "椎茸高湯-5入", price: 220, life: "約180天", img: "https://github.com/manmangoshop/product/blob/main/kb12.png?raw=true" },
+                { id: "KB13", name: "椎茸高湯-20入", price: 750, life: "約180天", img: "https://github.com/manmangoshop/product/blob/main/kb13.png?raw=true" },
+                { id: "KB14", name: "昆布高湯-5入", price: 180, life: "約180天", img: "https://github.com/manmangoshop/product/blob/main/kb14.png?raw=true" },
+                { id: "KB15", name: "昆布高湯-24入", price: 720, life: "約180天", img: "https://github.com/manmangoshop/product/blob/main/kb15.png?raw=true" },
+                { id: "KB10", name: "雞高湯-5入", price: 230, life: "約180天", img: "https://github.com/manmangoshop/product/blob/main/kb10.png?raw=true" },
+                { id: "KB17", name: "玉子燒-4入", price: 230, life: "約180天", img: "https://github.com/manmangoshop/product/blob/main/kb17.png?raw=true" },
+                { id: "KB16", name: "茶碗蒸-4入", price: 280, life: "約180天", img: "https://github.com/manmangoshop/product/blob/main/kb16.png?raw=true" }
             ]}, 
             { brand: "主廚市集", image: "https://github.com/manmangoshop/photo/blob/main/chefsmart.png?raw=true", items: [
-                { id: "cs1", name: "烏魚子禮盒240g", price: 1280, life: "約1年" },
-                { id: "cs2", name: "松葉蟹禮盒750g", price: 1880, life: "約2年" }
+                { id: "cs1", name: "烏魚子禮盒240g", price: 1280, life: "約1年", img: "" },
+                { id: "cs2", name: "松葉蟹禮盒750g", price: 1880, life: "約2年", img: "" }
             ]}
         ];
             
@@ -587,6 +684,40 @@ const productsData = [
         const progressBar = document.getElementById('progress-bar');
         const shippingMsg = document.getElementById('shipping-msg');
         const discountHint = document.getElementById('discount-hint');
+
+        // ================= 智慧商品大圖彈窗展示函式 =================
+        window.showLightbox = (imgUrl) => {
+            if (!imgUrl) return;
+            const overlay = document.getElementById('lightbox-overlay');
+            const img = document.getElementById('lightbox-img');
+            img.src = imgUrl;
+            overlay.classList.remove('hidden');
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+                img.classList.remove('scale-95');
+            }, 10);
+        };
+
+        window.hideLightbox = () => {
+            const overlay = document.getElementById('lightbox-overlay');
+            const img = document.getElementById('lightbox-img');
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            img.classList.add('scale-95');
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                img.src = "";
+            }, 300);
+        };
+
+        // ================= 一鍵滾動定位函式 =================
+        window.scrollToId = (id) => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+            } else if (id === 'top') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        };
 
         async function fetchStock() {
             try {
@@ -609,7 +740,6 @@ const productsData = [
             if (systemStatus === "CLOSED") {
                 document.getElementById('system-closed-message').classList.remove('hidden');
                 document.getElementById('footer-bar').classList.add('hidden');
-                document.getElementById('sticky-progress').classList.add('hidden');
                 document.getElementById('form-section').classList.add('hidden');
                 document.getElementById('product-container').classList.add('hidden');
                 return;
@@ -620,7 +750,105 @@ const productsData = [
             renderProducts();
             attachListeners();
             calculateTotal();
+            
+            // 啟動 Header 圖片輪播功能
+            initHeaderCarousel();
         }
+
+        // ==================== 【HEADER 輪播圖 執行邏輯】 ====================
+        let currentSlideIndex = 0;
+        let carouselInterval;
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        function initHeaderCarousel() {
+            const track = document.getElementById('header-carousel-track');
+            const dotsContainer = document.getElementById('header-carousel-dots');
+            if (!track || !dotsContainer) return;
+
+            track.innerHTML = '';
+            dotsContainer.innerHTML = '';
+
+            CAROUSEL_IMAGES.forEach((imgUrl, idx) => {
+                const slide = document.createElement('div');
+                slide.className = `carousel-slide ${idx === 0 ? 'active' : ''}`;
+                
+                const displayUrl = imgUrl || "https://placehold.co/1200x800/7494A1/ffffff?text=MANMANGO+SHOP";
+                slide.innerHTML = `
+                    <img src="${displayUrl}" class="w-full h-full object-cover transition-transform duration-[10s] hover:scale-105" alt="滿滿菓精選海報 ${idx + 1}" onerror="this.src='https://placehold.co/1200x800/7494a1/ffffff?text=Manmango+Shop'">
+                `;
+                track.appendChild(slide);
+
+                const dot = document.createElement('button');
+                dot.type = "button";
+                dot.className = `dot ${idx === 0 ? 'active' : ''}`;
+                dot.setAttribute('aria-label', `導向第 ${idx + 1} 張圖`);
+                dot.onclick = () => goToSlide(idx);
+                dotsContainer.appendChild(dot);
+            });
+
+            track.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            track.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, { passive: true });
+
+            startAutoplay();
+        }
+
+        function startAutoplay() {
+            stopAutoplay();
+            if (CAROUSEL_IMAGES.length <= 1) return;
+            carouselInterval = setInterval(() => {
+                const nextIndex = (currentSlideIndex + 1) % CAROUSEL_IMAGES.length;
+                goToSlide(nextIndex);
+            }, 3000); 
+        }
+
+        function stopAutoplay() {
+            if (carouselInterval) clearInterval(carouselInterval);
+        }
+
+        function goToSlide(index) {
+            currentSlideIndex = index;
+            const slides = document.querySelectorAll('.carousel-slide');
+            const dots = document.querySelectorAll('.dot');
+
+            slides.forEach((slide, idx) => {
+                if (idx === index) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            dots.forEach((dot, idx) => {
+                if (idx === index) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+
+            startAutoplay();
+        }
+
+        function handleSwipe() {
+            const threshold = 50; 
+            if (CAROUSEL_IMAGES.length <= 1) return;
+            
+            if (touchEndX < touchStartX - threshold) {
+                const next = (currentSlideIndex + 1) % CAROUSEL_IMAGES.length;
+                goToSlide(next);
+            } else if (touchEndX > touchStartX + threshold) {
+                const prev = (currentSlideIndex - 1 + CAROUSEL_IMAGES.length) % CAROUSEL_IMAGES.length;
+                goToSlide(prev);
+            }
+        }
+        // ==================== 【HEADER 輪播圖 邏輯結束】 ====================
 
         function renderProducts() {
             productContainer.innerHTML = ''; 
@@ -640,20 +868,39 @@ const productsData = [
                 let itemsHtml = availableItems.map(item => {
                     if (cart[item.id] === undefined) cart[item.id] = 0;
                     const stock = currentStock[item.id];
+                    const thumbUrl = item.img || "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'><rect width='100%' height='100%' fill='%23fff5f6'/><text x='50%' y='55%' font-size='24' text-anchor='middle'>🌸</text></svg>";
+                    
                     return `
-                        <div class="p-4 flex justify-between items-center border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
-                            <div class="flex-1 pr-4">
-                                <div class="font-bold text-gray-800 text-sm">${item.name}</div>
+                        <div class="p-4 flex justify-between items-center border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors gap-3">
+                            <!-- 商品樣式小圖 -->
+                            <div class="item-thumb-box" onclick="showLightbox('${item.img || ''}')">
+                                <img src="${thumbUrl}" alt="${item.name}">
+                            </div>
+
+                            <!-- 商品文字資料 -->
+                            <div class="flex-1 min-w-0">
+                                <div class="font-bold text-gray-800 text-sm leading-snug break-words">${item.name}</div>
                                 <div class="flex items-center mt-1">
                                     <span class="stock-label ${stock <= 3 ? 'stock-none' : ''}">庫存: ${stock}</span>
                                     <span class="text-[10px] text-gray-400 ml-3">效期：${item.life}</span>
                                 </div>
                                 <div class="text-wagashi font-black text-sm mt-1">NT$ ${item.price.toLocaleString()}</div>
                             </div>
-                            <div class="flex items-center bg-gray-50 rounded-full px-1 py-1">
-                                <button type="button" onclick="updateQty('${item.id}', -1)" class="btn-qty w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-sm text-gray-400 font-bold">-</button>
-                                <span id="qty-${item.id}" class="w-8 text-center text-xs font-bold text-gray-700 cart-qty-display">${cart[item.id]}</span>
-                                <button type="button" onclick="updateQty('${item.id}', 1)" class="btn-qty w-8 h-8 flex items-center justify-center bg-wagashi text-white rounded-full shadow-sm font-bold">+</button>
+
+                            <!-- 數量加減器 & 方案 A：內縮立體白瓷格鍵盤輸入框 -->
+                            <div class="flex items-center bg-gray-100 rounded-full px-1.5 py-1.5 shrink-0 border border-gray-200/50">
+                                <button type="button" onclick="updateQty('${item.id}', -1)" class="btn-qty w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-sm text-gray-400 font-bold hover:text-gray-600 focus:outline-none">-</button>
+                                <input type="number" 
+                                       id="qty-${item.id}" 
+                                       value="${cart[item.id]}" 
+                                       min="0" 
+                                       max="${stock}"
+                                       inputmode="numeric" 
+                                       pattern="[0-9]*"
+                                       onclick="this.select()"
+                                       onchange="handleManualQtyChange(this, '${item.id}')"
+                                       class="w-10 h-8 mx-1 text-center text-xs font-bold text-gray-700 bg-white rounded-lg shadow-sm border border-gray-200/60 focus:border-[#7494A1] focus:ring-1 focus:ring-[#7494A1] transition-all p-0 focus:outline-none cursor-text" />
+                                <button type="button" onclick="updateQty('${item.id}', 1)" class="btn-qty w-8 h-8 flex items-center justify-center bg-wagashi text-white rounded-full shadow-sm font-bold hover:brightness-105 focus:outline-none">+</button>
                             </div>
                         </div>`;
                 }).join('');
@@ -675,10 +922,41 @@ const productsData = [
             const next = Math.max(0, Math.min(stock, currentVal + delta)); 
             if (cart[id] !== next) { 
                 cart[id] = next; 
-                document.getElementById(`qty-${id}`).innerText = next; 
+                const inputEl = document.getElementById(`qty-${id}`);
+                if (inputEl) inputEl.value = next; 
                 calculateTotal(); 
             }
         };
+
+        // 處理鍵盤直接輸入的防呆與限制機制 (方案二 + 方案 A 實作)
+        window.handleManualQtyChange = (inputEl, id) => {
+            let val = parseInt(inputEl.value);
+            const stock = currentStock[id] || 0;
+            
+            if (isNaN(val) || val < 0) {
+                val = 0;
+            }
+            
+            if (val > stock) {
+                showWarning(`「${getProductBrandAndName(id)}」目前最多僅能預購 ${stock} 盒喔！`);
+                val = stock;
+            }
+            
+            cart[id] = val;
+            inputEl.value = val;
+            calculateTotal();
+        };
+
+        function getProductBrandAndName(id) {
+            for (let g of productsData) {
+                for (let i of g.items) {
+                    if (i.id === id) {
+                        return `${g.brand} - ${i.name}`;
+                    }
+                }
+            }
+            return "商品";
+        }
 
         function calculateCalculations() {
             let subtotal = 0, items = [], hasChefMarket = false;
@@ -702,13 +980,11 @@ const productsData = [
             if (note.includes("MMG2026") && subtotal >= 1500) candidates.push({ name: "菓友滿額折$100", deduct: 100, rate: 1, fixed: 100 });
             else if (note.includes("eqeadqweeqe") && subtotal >= 888) candidates.push({ name: "滿額折$88", deduct: 88, rate: 1, fixed: 88 });
 
-             candidates.sort((a, b) => b.deduct - a.deduct);
+            candidates.sort((a, b) => b.deduct - a.deduct);
             const best = candidates.length > 0 ? candidates[0] : { name: "無", rate: 1, fixed: 0 };
             
-            // 基礎折抵
             let tempProductAmount = Math.max(0, Math.round(subtotal * taxFactor * best.rate) - best.fixed);
             
-            // 自動滿額折抵
             const autoDeduct = getAutoTierDiscount(subtotal);
             const finalProductAmount = Math.max(0, tempProductAmount - autoDeduct);
             
@@ -736,7 +1012,6 @@ const productsData = [
             const res = calculateCalculations();
             document.getElementById('footer-total').innerText = res.total.toLocaleString();
             
-            // 在 TOTAL 上方組合展示所有套用折扣 (折扣碼與自動滿折疊加)
             let hintText = "";
             if (res.discountName !== "無") {
                 hintText += `已套用: ${res.discountName}`;
@@ -746,7 +1021,6 @@ const productsData = [
             }
             document.getElementById('discount-hint').innerText = hintText;
             
-            // 進度條以 $3,000 為最高門檻
             const percent = Math.min((res.finalProductAmount / 3000) * 100, 100);
             progressBar.style.width = `${percent}%`;
             
@@ -760,10 +1034,29 @@ const productsData = [
         }
 
         function attachListeners() {
-            // 同訂購姓名連動
-            document.getElementById('same-as-orderer').addEventListener('change', (e) => {
+            const nameEl = document.getElementById('name');
+            const phoneEl = document.getElementById('phone');
+            const recipientNameEl = document.getElementById('recipientName');
+            const recipientPhoneEl = document.getElementById('recipientPhone');
+            const sameAsOrdererCheckbox = document.getElementById('same-as-orderer');
+
+            sameAsOrdererCheckbox.addEventListener('change', (e) => {
                 if (e.target.checked) {
-                    document.getElementById('recipientName').value = document.getElementById('name').value;
+                    recipientNameEl.value = nameEl.value;
+                    recipientPhoneEl.value = phoneEl.value;
+                }
+            });
+
+            // 實時雙向連動：勾選後修改上方資料即時同步下方收件人
+            nameEl.addEventListener('input', () => {
+                if (sameAsOrdererCheckbox.checked) {
+                    recipientNameEl.value = nameEl.value;
+                }
+            });
+
+            phoneEl.addEventListener('input', () => {
+                if (sameAsOrdererCheckbox.checked) {
+                    recipientPhoneEl.value = phoneEl.value;
                 }
             });
 
@@ -778,6 +1071,38 @@ const productsData = [
             document.getElementById('back-edit-btn').addEventListener('click', hideModal);
             document.getElementById('confirm-submit-btn').addEventListener('click', submitOrder);
             document.getElementById('close-warning').addEventListener('click', hideWarning);
+
+            // ================= 智慧懸浮導覽滾動與優雅收合監聽 =================
+            window.addEventListener('scroll', () => {
+                const nav = document.getElementById('floating-nav');
+                const btnForm = document.getElementById('btn-scroll-form');
+                const formSection = document.getElementById('form-section');
+                
+                if (!nav) return;
+                
+                const scrollY = window.scrollY;
+                
+                // 超過 150 像素即顯示導覽列
+                if (scrollY > 150) {
+                    nav.classList.remove('opacity-0', 'pointer-events-none');
+                    nav.classList.add('opacity-100', 'pointer-events-auto');
+                } else {
+                    nav.classList.remove('opacity-100', 'pointer-events-auto');
+                    nav.classList.add('opacity-0', 'pointer-events-none');
+                }
+                
+                // 若已滑入表單填寫區，則優雅收合並隱藏「填寫資料」按鈕以免阻擋消費者
+                if (formSection) {
+                    const rect = formSection.getBoundingClientRect();
+                    if (rect.top < window.innerHeight - 100) {
+                        btnForm.classList.add('scale-0', 'opacity-0', 'pointer-events-none');
+                        btnForm.classList.remove('scale-100', 'opacity-100');
+                    } else {
+                        btnForm.classList.remove('scale-0', 'opacity-0', 'pointer-events-none');
+                        btnForm.classList.add('scale-100', 'opacity-100');
+                    }
+                }
+            });
         }
 
         function toggleModal(show) {
@@ -806,18 +1131,34 @@ const productsData = [
             const name = document.getElementById('name').value.trim();
             const recipientName = document.getElementById('recipientName').value.trim();
             const phone = document.getElementById('phone').value.trim();
+            const recipientPhone = document.getElementById('recipientPhone').value.trim();
             const email = document.getElementById('email').value.trim();
             const method = document.getElementById('shippingMethod').value;
             const addr = document.getElementById('address').value.trim();
             const isTaxChecked = document.getElementById('tax-toggle').checked;
             const taxIdVal = document.getElementById('taxId').value.trim();
 
-            if (!name || !recipientName || !phone || !email || !method || !addr) return showWarning("請滑至底部完成資訊填寫。");
-            if (!/^09\d{8}$/.test(phone)) return showWarning("手機格式不正確，請輸入 09 開頭的 10 位數號碼。");
+            // 若有漏填資訊，執行「智慧滾動並聚焦引導」
+            if (!name || !recipientName || !phone || !recipientPhone || !email || !method || !addr) {
+                scrollToId('form-section');
+                setTimeout(() => {
+                    const fields = ['name', 'phone', 'recipientName', 'recipientPhone', 'line', 'email', 'shippingMethod', 'address'];
+                    for (let fId of fields) {
+                        const input = document.getElementById(fId);
+                        if (input && !input.value.trim()) {
+                            input.focus();
+                            break;
+                        }
+                    }
+                }, 600);
+                return showWarning("請滑至底部完成訂購資料填寫。");
+            }
+
+            if (!/^09\d{8}$/.test(phone)) return showWarning("聯絡電話格式不正確，請輸入 09 開頭的 10 位數號碼。");
+            if (!/^09\d{8}$/.test(recipientPhone)) return showWarning("收件電話格式不正確，請輸入 09 開頭的 10 位數號碼。");
             if (isTaxChecked && !taxIdVal) return showWarning("您已勾選開立統編，請填寫 8 位數統一編號。");
             if (!document.getElementById('terms-toggle').checked) return showWarning("請閱讀並勾選同意訂購須知。");
 
-            // 進入核對畫面時，確保按鈕都是啟用的
             const confirmBtn = document.getElementById('confirm-submit-btn');
             const backBtn = document.getElementById('back-edit-btn');
             confirmBtn.disabled = false;
@@ -827,7 +1168,6 @@ const productsData = [
 
             let listHtml = res.items.map(i => `<div class="py-2 border-b border-gray-50 last:border-0"><div class="flex justify-between items-start mb-0.5"><span class="text-xs font-medium text-gray-700 leading-tight">${i.brand}-${i.name}</span><b class="text-xs text-gray-900 ml-4 shrink-0">NT$ ${(i.price * i.qty).toLocaleString()}</b></div><div class="text-[10px] text-gray-400">單價 NT$ ${i.price.toLocaleString()} x ${i.qty}</div></div>`).join('');
             
-                        // 組合在 Modal 核對畫面中詳細展示的折扣疊加區塊
             let discountSectionHtml = "";
             if (res.discountName !== "無") {
                 discountSectionHtml += `<div class="flex justify-between text-green-600"><span>優惠折扣碼 (${res.discountName})</span><span>- NT$ ${res.promoDeduct.toLocaleString()}</span></div>`;
@@ -839,13 +1179,14 @@ const productsData = [
             document.getElementById('modal-body').innerHTML = `
                 <div class="space-y-6 text-sumi-black">
                     <div class="bg-gray-50 p-5 rounded-2xl text-[12px] space-y-1.5 border border-gray-100 text-left">
-                        <div class="flex justify-between"><b>收件姓名：</b><span class="font-black">${document.getElementById('recipientName').value}</span></div>
+                        <div class="flex justify-between"><b>收件姓名：</b><span class="font-black">${recipientName}</span></div>
+                        <div class="flex justify-between"><b>收件電話：</b><span class="font-black">${recipientPhone}</span></div>
                         <div class="flex justify-between"><b>聯絡電話：</b><span>${phone}</span></div>
                         <div class="flex justify-between"><b>配送方式：</b><span>${method}</span></div>
                         <div class="flex flex-col pt-1"><b>收件地址：</b><span class="mt-1 text-gray-500 break-words">${addr}</span></div>
                         ${isTaxChecked ? `<div class="flex justify-between text-blue-600"><b>統一編號：</b><span>${taxIdVal}</span></div>` : ''}
                     </div>
-                    <div><p class="text-[10px] font-black text-gray-400 mb-2 uppercase tracking-widest border-b pb-1 text-left">訂購商品清單</p>${listHtml}</div>
+                    <div><p class="text-[10px] font-black text-gray-400 mb-2 uppercase tracking-widest border-b pb-1 text-left">預購商品明細</p>${listHtml}</div>
                     <div class="bg-wagashi/5 p-5 rounded-3xl space-y-2 text-xs font-bold border border-wagashi/10">
                         <div class="flex justify-between"><span>商品總額 ${isTaxChecked ? '(含5%稅金)' : ''}</span><span>NT$ ${Math.round(res.subtotal * (isTaxChecked ? 1.05 : 1)).toLocaleString()}</span></div>
                         ${discountSectionHtml}
@@ -864,7 +1205,6 @@ const productsData = [
             const backBtn = document.getElementById('back-edit-btn');
             const closeBtn = document.getElementById('close-modal');
             
-            // 【重要】點擊確認送出後才不可以用
             confirmBtn.disabled = true; 
             confirmBtn.innerText = "正在傳送...";
             backBtn.disabled = true;
@@ -873,14 +1213,26 @@ const productsData = [
 
             const res = calculateCalculations();
             const rawPhone = document.getElementById('phone').value.trim();
+            const rawRecipientPhone = document.getElementById('recipientPhone').value.trim();
             const rawTaxId = document.getElementById('taxId').value.trim();
-            const orderId = "MA" + Date.now().toString().slice(-4);
             
+            // 組合完整折扣字串
+            let completeDiscountText = "";
+            if (res.discountName !== "無") {
+                completeDiscountText += res.discountName;
+            }
+            if (res.autoDeduct > 0) {
+                completeDiscountText += (completeDiscountText ? " + " : "") + `活動滿額折$${res.autoDeduct}`;
+            }
+            if (!completeDiscountText) {
+                completeDiscountText = "無";
+            }
+
             const orderData = { 
-                orderId, 
                 name: document.getElementById('name').value, 
                 recipientName: document.getElementById('recipientName').value,
                 phone: rawPhone, 
+                recipientPhone: rawRecipientPhone,
                 email: document.getElementById('email').value.trim(), 
                 line: document.getElementById('line').value, 
                 shippingMethod: document.getElementById('shippingMethod').value, 
@@ -893,38 +1245,91 @@ const productsData = [
                 ...orderData, 
                 type: "submitOrder", 
                 phone: "'" + rawPhone, 
+                recipientPhone: "'" + rawRecipientPhone,
                 taxId: rawTaxId ? "'" + rawTaxId : "", 
                 detail: res.items.map(i => `${i.brand}-${i.name} (單價:${i.price}) x ${i.qty}`).join('\n'), 
                 itemIds: res.items.map(i => i.id), 
                 itemQtys: res.items.map(i => i.qty), 
                 shippingFee: res.shippingFee, 
-                discount: res.discountName, 
+                discount: completeDiscountText, 
                 note: document.getElementById('note').value, 
                 orderTime: new Date().toLocaleString('zh-TW') 
             };
 
             try { 
-                await fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) }); 
-                showSuccess(orderData); 
+                // 移除了 mode: 'no-cors'，以此獲得 Google Apps Script 正確回傳的最新遞增 orderId 封包
+                const response = await fetch(GAS_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify(payload) 
+                }); 
+                const result = await response.json();
+                
+                if (result.status === "success") {
+                    orderData.orderId = result.orderId; // 綁定後端生成的正確編號
+                    showSuccess(orderData); 
+                } else {
+                    throw new Error(result.message || "後台核發編號失敗");
+                }
             } catch (e) { 
-                confirmBtn.disabled = false; confirmBtn.innerText = "再次確認送出";
-                backBtn.disabled = false; backBtn.classList.remove('opacity-30', 'cursor-not-allowed');
+                confirmBtn.disabled = false; 
+                confirmBtn.innerText = "再次確認送出";
+                backBtn.disabled = false; 
+                backBtn.classList.remove('opacity-30', 'cursor-not-allowed');
                 closeBtn.classList.remove('hidden');
-                showWarning("傳輸不穩，請重新點擊。");
+                showWarning("網路傳輸不穩，請再次點擊發送確認。");
             }
         }
 
+        // ================= 一鍵複製訂單編號函式 =================
+        window.copyOrderId = (orderId) => {
+            const tempInput = document.createElement("input");
+            tempInput.value = orderId;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            tempInput.setSelectionRange(0, 99999); 
+            try {
+                const successful = document.execCommand("copy");
+                const btn = document.getElementById('copy-btn');
+                if (successful && btn) {
+                    btn.innerText = "✔️ 已複製！";
+                    btn.classList.remove('bg-wagashi/10', 'text-wagashi');
+                    btn.classList.add('bg-green-600', 'text-white');
+                    setTimeout(() => {
+                        btn.innerText = "📋 複製";
+                        btn.classList.remove('bg-green-600', 'text-white');
+                        btn.classList.add('bg-wagashi/10', 'text-wagashi');
+                    }, 2000);
+                }
+            } catch (err) {
+                console.error("複製失敗", err);
+            }
+            document.body.removeChild(tempInput);
+        };
+        // =========================================================
+
         function showSuccess(data) {
-            document.getElementById('modal-title').innerText = "預購受理成功";
+            document.getElementById('modal-title').innerText = "⚠️ 請完成最後對帳步驟";
             document.getElementById('modal-footer-btns').classList.add('hidden');
             const bank = data.isTax === "是" ? "台灣銀行(004) 111001027133" : "中國信託(822) 101540000605";
             
             document.getElementById('modal-body').innerHTML = `
                 <div class="space-y-6 text-left">
+                    <div class="bg-red-50 border border-red-200 p-4 rounded-2xl text-[12px] text-red-800 leading-relaxed font-medium">
+                        <p class="font-bold text-sm mb-1 text-red-600">⏱️ 預購名額僅保留 72 小時！</p>
+                        系統已暫時為您受理申請。請於匯款完成後，<b>務必點擊下方綠色按鈕加入官方 LINE</b>，並傳送您的<b>「訂單編號」與「匯款後五碼」</b>。收到客服「對帳完成」回覆後，該筆訂單才算是正式完成訂購。
+                    </div>
+
                     <div class="bg-gray-50 p-5 rounded-2xl border border-gray-100 text-[13px] space-y-2">
-                        <div class="flex justify-between border-b pb-2 mb-2"><span class="text-gray-400">訂單編號</span><span class="font-bold text-wagashi">${data.orderId}</span></div>
+                        <div class="flex justify-between items-center border-b pb-2 mb-2">
+                            <span class="text-gray-400">訂單編號</span>
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-wagashi" id="success-order-id">${data.orderId}</span>
+                                <button type="button" onclick="copyOrderId('${data.orderId}')" id="copy-btn" class="text-[10px] bg-wagashi/10 text-wagashi px-2.5 py-1 rounded-md font-bold transition-all">📋 複製</button>
+                            </div>
+                        </div>
                         <div class="flex justify-between"><span class="text-gray-400">訂購姓名</span><span>${data.name}</span></div>
                         <div class="flex justify-between"><span class="text-gray-400">收件姓名</span><span class="font-bold text-gray-800">${data.recipientName}</span></div>
+                        <div class="flex justify-between"><span class="text-gray-400">收件電話</span><span>${data.recipientPhone}</span></div>
                         <div class="flex justify-between"><span class="text-gray-400">聯絡電話</span><span>${data.phone}</span></div>
                         <div class="flex justify-between"><span class="text-gray-400">配送方式</span><span>${data.shippingMethod}</span></div>
                         <div class="flex flex-col pt-1"><span class="text-gray-400 mb-1">收件地址</span><span class="break-words font-medium text-gray-700">${data.address}</span></div>
@@ -936,12 +1341,12 @@ const productsData = [
                         <ul class="text-[11px] text-blue-700 font-medium space-y-2 list-disc pl-4 leading-relaxed">
                             <li>訂單確認郵件已寄至您的電子信箱</li>
                             <li>請於三日內完成付款，逾期名額自動釋出</li>
-                            <li>完成後請務必聯絡 LINE 客服確定訂單 </li>
+                            <li>匯款完成後，請【複製訂單編號】前往 LINE 對帳</li>
                         </ul>
                     </div>
                     <div class="text-center space-y-4">
-                        <a href="https://lin.ee/EZDBiB0" target="_blank" class="flex items-center justify-center gap-2 w-full py-4 bg-line text-white rounded-2xl font-bold text-sm shadow-lg active:scale-[0.98] transition-transform">前往 LINE 客服報帳 (@465roorg)</a>
-                        <button id="final-home-btn" class="text-gray-400 text-xs font-bold hover:text-gray-600 pb-2">完成訂購並回到首頁</button>
+                        <a href="https://lin.ee/EZDBiB0" target="_blank" class="flex items-center justify-center gap-2 w-full py-4 bg-line text-white rounded-2xl font-bold text-sm shadow-lg active:scale-[0.98] transition-transform">💬 複製單號後點此加入 LINE 完成訂單</a>
+                        <button id="final-home-btn" class="text-gray-300 text-xs font-bold hover:text-gray-600 pb-2">訂單已受理並回到首頁</button>
                     </div>
                 </div>`;
             document.getElementById('final-home-btn').onclick = finishAndHome;
@@ -957,7 +1362,6 @@ const productsData = [
             document.getElementById('order-form-el').reset();
             document.getElementById('tax-input-group').classList.add('hidden');
             
-            // 重置按鈕狀態
             const confirmBtn = document.getElementById('confirm-submit-btn');
             const backBtn = document.getElementById('back-edit-btn');
             const modalFooter = document.getElementById('modal-footer-btns');
@@ -974,6 +1378,8 @@ const productsData = [
             document.getElementById('product-container').classList.remove('hidden');
             document.getElementById('form-section').classList.remove('hidden');
             calculateTotal();
+            
+            initHeaderCarousel();
         }
 
         window.onload = init;
