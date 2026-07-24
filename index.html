@@ -200,8 +200,8 @@
         </div>
     </nav>
 
-    <!-- ====== 【HEADER 輪播圖 區塊 (方案 B)】 ====== -->
-    <header class="relative w-full overflow-hidden aspect-[3/2] md:max-h-[500px] bg-gray-100 shadow-md">
+    <!-- ====== 【HEADER 輪播圖 區塊 (做法 A：100% 全寬度滿版自適應)】 ====== -->
+    <header class="relative w-full overflow-hidden aspect-[3/2] sm:aspect-[16/9] bg-gray-900 shadow-md transition-all duration-300">
         <!-- 輪播軌道容器 -->
         <div id="header-carousel-track" class="relative w-full h-full cursor-grab active:cursor-grabbing">
             <!-- 幻燈片將由 JavaScript 動態生成並注入此處 -->
@@ -775,7 +775,7 @@
                 
                 const displayUrl = imgUrl || "https://placehold.co/1200x800/7494A1/ffffff?text=MANMANGO+SHOP";
                 slide.innerHTML = `
-                    <img src="${displayUrl}" class="w-full h-full object-cover transition-transform duration-[10s] hover:scale-105" alt="滿滿菓精選海報 ${idx + 1}" onerror="this.src='https://placehold.co/1200x800/7494a1/ffffff?text=Manmango+Shop'">
+                    <img src="${displayUrl}" class="w-full h-full object-cover md:object-contain transition-transform duration-[10s] hover:scale-105" alt="滿滿菓精選海報 ${idx + 1}" onerror="this.src='https://placehold.co/1200x800/7494a1/ffffff?text=Manmango+Shop'">
                 `;
                 track.appendChild(slide);
 
