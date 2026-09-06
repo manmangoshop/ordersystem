@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { productDisplayName } from "@/lib/product-name";
 import { createProduct, setStoreStatus, toggleProduct, updateOrderStatus } from "./actions";
 import InventoryForm from "./inventory-form";
 
@@ -41,11 +42,12 @@ export default async function AdminPage() {
       FROM orders o LEFT JOIN order_items oi ON oi.order_id=o.id
       GROUP BY o.id ORDER BY o.created_at DESC LIMIT 100
     `,
-    sql<{ batch_code: string; sku: string; name: string; received_at: string | null; received_qty: number; remaining_qty: number; foreign_unit_cost: string | null; exchange_rate: string | null; unit_weight_kg: string | null; freight_per_kg_twd: string | null; unit_cost_cents: number | null }[]>`
-      SELECT ib.batch_code,p.sku,p.name,ib.received_at::text,ib.received_qty,ib.remaining_qty,
+    sql<{ batch_code: string; sku: string; name: string; brand: string; received_at: string | null; received_qty: number; remaining_qty: number; foreign_unit_cost: string | null; exchange_rate: string | null; unit_weight_kg: string | null; freight_per_kg_twd: string | null; unit_cost_cents: number | null }[]>`
+      SELECT ib.batch_code,p.sku,p.name,COALESCE(b.name,'') brand,ib.received_at::text,ib.received_qty,ib.remaining_qty,
         ib.foreign_unit_cost::text,ib.exchange_rate::text,ib.unit_weight_kg::text,
         ib.freight_per_kg_twd::text,ib.unit_cost_cents
       FROM inventory_batches ib JOIN products p ON p.id=ib.product_id
+      LEFT JOIN brands b ON b.id=p.brand_id
       ORDER BY ib.created_at DESC LIMIT 50
     `,
   ]);
@@ -81,20 +83,20 @@ export default async function AdminPage() {
     <section className="panel">
       <div className="panel-head"><h2>商品與即時庫存</h2><span className="badge">{products.length} 項</span></div>
       <table><thead><tr><th>商品編號</th><th>品牌／商品</th><th>售價</th><th>可售庫存</th><th>已過期</th><th>最近到期</th><th>狀態</th></tr></thead>
-        <tbody>{products.map((product) => <tr key={product.id}><td><b>{product.sku}</b></td><td>{product.brand}<br />{product.name}</td><td>{money(product.price_cents)}</td><td><span className={`badge ${product.sellable_stock <= 3 ? "warn" : "ok"}`}>{product.sellable_stock}</span></td><td><span className={`badge ${product.expired_stock > 0 ? "warn" : ""}`}>{product.expired_stock}</span></td><td>{product.nearest_expiry || "—"}</td><td><form action={toggleProduct}><input type="hidden" name="id" value={product.id} /><button className={product.active ? "secondary" : "danger"}>{product.active ? "販售中" : "已下架"}</button></form></td></tr>)}</tbody>
+        <tbody>{products.map((product) => <tr key={product.id}><td><b>{product.sku}</b></td><td>{productDisplayName(product.brand, product.name)}</td><td>{money(product.price_cents)}</td><td><span className={`badge ${product.sellable_stock <= 3 ? "warn" : "ok"}`}>{product.sellable_stock}</span></td><td><span className={`badge ${product.expired_stock > 0 ? "warn" : ""}`}>{product.expired_stock}</span></td><td>{product.nearest_expiry || "—"}</td><td><form action={toggleProduct}><input type="hidden" name="id" value={product.id} /><button className={product.active ? "secondary" : "danger"}>{product.active ? "販售中" : "已下架"}</button></form></td></tr>)}</tbody>
       </table>
     </section>
 
     <section className="panel">
       <h2>登記進貨</h2>
-      <InventoryForm products={products.map(({ sku, name }) => ({ sku, name }))} />
+      <InventoryForm products={products.map(({ sku, name, brand }) => ({ sku, name: productDisplayName(brand, name) }))} />
     </section>
 
     <section className="panel">
       <div className="panel-head"><h2>最近進貨批次</h2><span className="badge">最近 50 筆</span></div>
       <table><thead><tr><th>批次</th><th>商品</th><th>進貨日</th><th>數量／剩餘</th><th>日幣單價／匯率</th><th>重量／公斤運費</th><th>最終單位成本</th></tr></thead>
         <tbody>{batches.map((batch) => <tr key={batch.batch_code}>
-          <td><b>{batch.batch_code}</b></td><td>{batch.sku}<br />{batch.name}</td><td>{batch.received_at || "—"}</td>
+          <td><b>{batch.batch_code}</b></td><td>{batch.sku}<br />{productDisplayName(batch.brand, batch.name)}</td><td>{batch.received_at || "—"}</td>
           <td>{batch.received_qty}／{batch.remaining_qty}</td>
           <td>{batch.foreign_unit_cost == null ? "—" : `¥${Number(batch.foreign_unit_cost).toLocaleString("zh-TW")}／${Number(batch.exchange_rate).toFixed(4)}`}</td>
           <td>{batch.unit_weight_kg == null ? "—" : `${Number(batch.unit_weight_kg) * 1000}g／NT$${Number(batch.freight_per_kg_twd).toLocaleString("zh-TW")}`}</td>

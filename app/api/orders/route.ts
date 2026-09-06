@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { calculateOrder } from "@/lib/order";
+import { productDisplayName } from "@/lib/product-name";
 
 const orderSchema = z.object({
   idempotencyKey: z.string().uuid(),
@@ -45,12 +46,17 @@ export async function POST(request: NextRequest) {
       const combined = new Map<string, number>();
       for (const item of parsed.data.items) combined.set(item.sku, (combined.get(item.sku) ?? 0) + item.quantity);
       const skus = [...combined.keys()];
-      const products = await tx<{ id: string; sku: string; name: string; price_cents: number }[]>`
-        SELECT id, sku, name, price_cents FROM products
-        WHERE sku IN ${tx(skus)} AND active = true
-        FOR UPDATE
+      const rawProducts = await tx<{ id: string; sku: string; name: string; brand: string; price_cents: number }[]>`
+        SELECT p.id, p.sku, p.name, COALESCE(b.name, '') brand, p.price_cents
+        FROM products p LEFT JOIN brands b ON b.id=p.brand_id
+        WHERE p.sku IN ${tx(skus)} AND p.active = true
+        FOR UPDATE OF p
       `;
-      if (products.length !== skus.length) throw new Error("PRODUCT_NOT_FOUND");
+      if (rawProducts.length !== skus.length) throw new Error("PRODUCT_NOT_FOUND");
+      const products = rawProducts.map((product) => ({
+        ...product,
+        name: productDisplayName(product.brand, product.name),
+      }));
 
       const pricedItems = products.map((p) => ({ sku: p.sku, name: p.name, priceCents: p.price_cents, quantity: combined.get(p.sku)! }));
       const totals = calculateOrder(pricedItems, parsed.data.shippingMethod, Boolean(parsed.data.taxId));

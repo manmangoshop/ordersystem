@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import { productDisplayName } from "@/lib/product-name";
 
 type Product = {
   sku: string;
@@ -141,13 +142,13 @@ export default function Shop() {
         {catalog?.status === "OPEN" && <div className="product-grid">
           {visible.map((product) => (
             <article className="product-card" key={product.sku}>
-              <div className="product-image">{product.imageUrl && <Image src={product.imageUrl} alt={product.name} fill sizes="(max-width: 560px) 100vw, (max-width: 800px) 50vw, 33vw" unoptimized />}</div>
+              <div className="product-image">{product.imageUrl && <Image src={product.imageUrl} alt={productDisplayName(product.brand, product.name)} fill sizes="(max-width: 560px) 100vw, (max-width: 800px) 50vw, 33vw" unoptimized />}</div>
               <div className="product-body">
-                <div className="product-brand">{product.brand} · {product.sku}</div>
-                <h3>{product.name}</h3>
+                <div className="product-brand">{product.sku}</div>
+                <h3>{productDisplayName(product.brand, product.name)}</h3>
                 <div className="product-meta">
                   <div><span className="price">{money(product.price)}</span><span className="stock">庫存 {product.stock} 件</span></div>
-                  <div className="qty"><button onClick={() => changeQty(product, -1)} aria-label={`減少 ${product.name}`}>−</button><span>{cart[product.sku] ?? 0}</span><button onClick={() => changeQty(product, 1)} aria-label={`增加 ${product.name}`}>＋</button></div>
+                  <div className="qty"><button onClick={() => changeQty(product, -1)} aria-label={`減少 ${productDisplayName(product.brand, product.name)}`}>−</button><span>{cart[product.sku] ?? 0}</span><button onClick={() => changeQty(product, 1)} aria-label={`增加 ${productDisplayName(product.brand, product.name)}`}>＋</button></div>
                 </div>
               </div>
             </article>
@@ -183,7 +184,7 @@ export default function Shop() {
                 <div className="form-group full"><label>備註（選填）</label><textarea className="field" name="note" rows={3} maxLength={500} /></div>
               </div>
               <div className="summary">
-                {selected.map((p) => <div className="summary-row" key={p.sku}><span>{p.name} × {cart[p.sku]}</span><b>{money(p.price * cart[p.sku])}</b></div>)}
+                {selected.map((p) => <div className="summary-row" key={p.sku}><span>{productDisplayName(p.brand, p.name)} × {cart[p.sku]}</span><b>{money(p.price * cart[p.sku])}</b></div>)}
                 {estimatedDiscount > 0 && <div className="summary-row"><span>任選兩件 95 折</span><b>− {money(estimatedDiscount)}</b></div>}
                 <div className="summary-row total"><span>商品折扣後</span><span>{money(subtotal - estimatedDiscount)}</span></div>
               </div>
