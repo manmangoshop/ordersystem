@@ -60,7 +60,11 @@ export async function receiveInventory(formData: FormData) {
     z.coerce.number().finite().min(0).max(maximum).optional(),
   );
   const input = z.object({
-    sku: z.string().trim().min(1), batchCode: z.string().trim().min(1), quantity: z.coerce.number().int().positive(),
+    sku: z.string().trim().min(1),
+    batchCode: z.string().trim()
+      .regex(/^\d+[A-Za-z]$/, "批次編號請使用數字加一個英文字母，例如 2609A")
+      .transform((value) => value.toUpperCase()),
+    quantity: z.coerce.number().int().positive(),
     receivedAt: z.string().optional(), expiryDate: z.string().optional(),
     foreignUnitCost: optionalNumber(10_000_000), exchangeRate: optionalNumber(100),
     unitWeightGrams: optionalNumber(1_000_000), freightPerKg: optionalNumber(1_000_000),

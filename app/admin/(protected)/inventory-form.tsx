@@ -32,7 +32,7 @@ export default function InventoryForm({ products }: { products: ProductOption[] 
 
   return <form action={receiveInventory} className="form-grid">
     <div className="form-group"><label>商品編號</label><input className="field" name="sku" list="product-skus" required placeholder="YM1" /><datalist id="product-skus">{products.map((product) => <option key={product.sku} value={product.sku}>{product.name}</option>)}</datalist></div>
-    <div className="form-group"><label>批次編號</label><input className="field" name="batchCode" required placeholder="YM1-260906-A" /></div>
+    <div className="form-group"><label>批次編號</label><input className="field" name="batchCode" required pattern="[0-9]+[A-Za-z]" title="請輸入數字加一個英文字母，例如 2609A" placeholder="2609A" /></div>
     <div className="form-group"><label>進貨數量</label><input className="field" name="quantity" type="number" min="1" step="1" required value={quantity} onChange={(event) => setQuantity(event.target.value)} /></div>
     <div className="form-group"><label>日幣單價（¥／件）</label><input className="field" name="foreignUnitCost" type="number" min="0" step="0.01" value={foreignUnitCost} onChange={(event) => setForeignUnitCost(event.target.value)} placeholder="500" /></div>
     <div className="form-group"><label>日幣匯率（1日幣＝台幣）</label><input className="field" name="exchangeRate" type="number" min="0" step="0.000001" value={exchangeRate} onChange={(event) => setExchangeRate(event.target.value)} placeholder="0.215" /></div>
