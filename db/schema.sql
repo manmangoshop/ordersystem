@@ -39,10 +39,24 @@ CREATE TABLE IF NOT EXISTS inventory_batches (
   received_qty integer NOT NULL DEFAULT 0 CHECK (received_qty >= 0),
   remaining_qty integer NOT NULL DEFAULT 0 CHECK (remaining_qty >= 0),
   unit_cost_cents integer CHECK (unit_cost_cents IS NULL OR unit_cost_cents >= 0),
+  foreign_currency text,
+  foreign_unit_cost numeric(14,4),
   exchange_rate numeric(12,6),
+  unit_weight_kg numeric(10,4),
+  freight_per_kg_twd numeric(12,4),
+  goods_unit_cost_cents integer,
+  freight_unit_cost_cents integer,
   note text,
   created_at timestamptz NOT NULL DEFAULT now()
 );
+
+ALTER TABLE inventory_batches ADD COLUMN IF NOT EXISTS foreign_currency text;
+ALTER TABLE inventory_batches ADD COLUMN IF NOT EXISTS foreign_unit_cost numeric(14,4);
+ALTER TABLE inventory_batches ADD COLUMN IF NOT EXISTS exchange_rate numeric(12,6);
+ALTER TABLE inventory_batches ADD COLUMN IF NOT EXISTS unit_weight_kg numeric(10,4);
+ALTER TABLE inventory_batches ADD COLUMN IF NOT EXISTS freight_per_kg_twd numeric(12,4);
+ALTER TABLE inventory_batches ADD COLUMN IF NOT EXISTS goods_unit_cost_cents integer;
+ALTER TABLE inventory_batches ADD COLUMN IF NOT EXISTS freight_unit_cost_cents integer;
 
 CREATE TABLE IF NOT EXISTS orders (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),

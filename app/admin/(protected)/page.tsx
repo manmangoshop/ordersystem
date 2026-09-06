@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
-import { createProduct, receiveInventory, setStoreStatus, toggleProduct, updateOrderStatus } from "./actions";
+import { createProduct, setStoreStatus, toggleProduct, updateOrderStatus } from "./actions";
+import InventoryForm from "./inventory-form";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +11,7 @@ const statusLabel: Record<string, string> = {
 
 export default async function AdminPage() {
   const sql = db();
-  const [[setting], [metrics], products, orders] = await Promise.all([
+  const [[setting], [metrics], products, orders, batches] = await Promise.all([
     sql<{ value: string }[]>`SELECT value #>> '{}' AS value FROM settings WHERE key='store_status'`,
     sql<{ orders_today: number; revenue_month: number; low_stock: number; pending: number; expired_stock: number }[]>`
       SELECT
@@ -39,6 +40,13 @@ export default async function AdminPage() {
         COALESCE(SUM(oi.quantity),0)::int item_count
       FROM orders o LEFT JOIN order_items oi ON oi.order_id=o.id
       GROUP BY o.id ORDER BY o.created_at DESC LIMIT 100
+    `,
+    sql<{ batch_code: string; sku: string; name: string; received_at: string | null; received_qty: number; remaining_qty: number; foreign_unit_cost: string | null; exchange_rate: string | null; unit_weight_kg: string | null; freight_per_kg_twd: string | null; unit_cost_cents: number | null }[]>`
+      SELECT ib.batch_code,p.sku,p.name,ib.received_at::text,ib.received_qty,ib.remaining_qty,
+        ib.foreign_unit_cost::text,ib.exchange_rate::text,ib.unit_weight_kg::text,
+        ib.freight_per_kg_twd::text,ib.unit_cost_cents
+      FROM inventory_batches ib JOIN products p ON p.id=ib.product_id
+      ORDER BY ib.created_at DESC LIMIT 50
     `,
   ]);
 
@@ -79,16 +87,20 @@ export default async function AdminPage() {
 
     <section className="panel">
       <h2>登記進貨</h2>
-      <form action={receiveInventory} className="form-grid">
-        <div className="form-group"><label>商品編號</label><input className="field" name="sku" required placeholder="YM1" /></div>
-        <div className="form-group"><label>批次編號</label><input className="field" name="batchCode" required placeholder="YM1-2609A" /></div>
-        <div className="form-group"><label>進貨數量</label><input className="field" name="quantity" type="number" min="1" required /></div>
-        <div className="form-group"><label>單位成本（元）</label><input className="field" name="unitCost" type="number" min="0" /></div>
-        <div className="form-group"><label>進貨日期</label><input className="field" name="receivedAt" type="date" /></div>
-        <div className="form-group"><label>賞味期限</label><input className="field" name="expiryDate" type="date" /></div>
-        <div className="form-group full"><label>備註</label><input className="field" name="note" maxLength={300} /></div>
-        <div><button className="primary">新增進貨批次</button></div>
-      </form>
+      <InventoryForm products={products.map(({ sku, name }) => ({ sku, name }))} />
+    </section>
+
+    <section className="panel">
+      <div className="panel-head"><h2>最近進貨批次</h2><span className="badge">最近 50 筆</span></div>
+      <table><thead><tr><th>批次</th><th>商品</th><th>進貨日</th><th>數量／剩餘</th><th>日幣單價／匯率</th><th>重量／公斤運費</th><th>最終單位成本</th></tr></thead>
+        <tbody>{batches.map((batch) => <tr key={batch.batch_code}>
+          <td><b>{batch.batch_code}</b></td><td>{batch.sku}<br />{batch.name}</td><td>{batch.received_at || "—"}</td>
+          <td>{batch.received_qty}／{batch.remaining_qty}</td>
+          <td>{batch.foreign_unit_cost == null ? "—" : `¥${Number(batch.foreign_unit_cost).toLocaleString("zh-TW")}／${Number(batch.exchange_rate).toFixed(4)}`}</td>
+          <td>{batch.unit_weight_kg == null ? "—" : `${Number(batch.unit_weight_kg) * 1000}g／NT$${Number(batch.freight_per_kg_twd).toLocaleString("zh-TW")}`}</td>
+          <td>{batch.unit_cost_cents == null ? "—" : money(batch.unit_cost_cents)}</td>
+        </tr>)}</tbody>
+      </table>
     </section>
 
     <section className="panel">
