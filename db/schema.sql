@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS products (
 CREATE TABLE IF NOT EXISTS inventory_batches (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   product_id uuid NOT NULL REFERENCES products(id) ON DELETE RESTRICT,
-  batch_code text NOT NULL UNIQUE,
+  batch_code text NOT NULL,
   received_at date,
   expiry_date date,
   received_qty integer NOT NULL DEFAULT 0 CHECK (received_qty >= 0),
@@ -57,6 +57,9 @@ ALTER TABLE inventory_batches ADD COLUMN IF NOT EXISTS unit_weight_kg numeric(10
 ALTER TABLE inventory_batches ADD COLUMN IF NOT EXISTS freight_per_kg_twd numeric(12,4);
 ALTER TABLE inventory_batches ADD COLUMN IF NOT EXISTS goods_unit_cost_cents integer;
 ALTER TABLE inventory_batches ADD COLUMN IF NOT EXISTS freight_unit_cost_cents integer;
+ALTER TABLE inventory_batches DROP CONSTRAINT IF EXISTS inventory_batches_batch_code_key;
+CREATE UNIQUE INDEX IF NOT EXISTS inventory_batches_product_batch_unique
+  ON inventory_batches(product_id, batch_code);
 
 CREATE TABLE IF NOT EXISTS orders (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
