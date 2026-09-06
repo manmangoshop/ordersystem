@@ -1,0 +1,34 @@
+{
+  "name": "manmango-order-system",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "db:migrate": "node scripts/migrate.mjs",
+    "import:xlsx": "node scripts/import-xlsx.mjs",
+    "db:check": "node scripts/check-db.mjs",
+    "test:e2e": "node scripts/e2e-production.mjs"
+  },
+  "dependencies": {
+    "next": "16.3.4",
+    "postgres": "3.4.7",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "zod": "4.1.12"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.0",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
+    "eslint": "9.39.1",
+    "eslint-config-next": "16.3.4",
+    "exceljs": "4.4.0",
+    "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": "24.x"
+  }
+}

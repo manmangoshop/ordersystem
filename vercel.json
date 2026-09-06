@@ -1,0 +1,6 @@
+{
+  "functions": {
+    "app/api/orders/route.ts": { "maxDuration": 15 }
+  },
+  "regions": ["sin1"]
+}

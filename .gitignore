@@ -1,0 +1,13 @@
+node_modules/
+.next/
+.vercel/
+.env*
+!.env.example
+.tools/
+*.xlsx
+*.xls
+*.csv
+.DS_Store
+.vercel
+.agents/
+skills-lock.json

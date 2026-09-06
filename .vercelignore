@@ -1,0 +1,10 @@
+.vercel/
+.tools/
+.next/
+node_modules/
+.env*
+*.xlsx
+*.xls
+*.csv
+.agents/
+skills-lock.json

@@ -1,1 +1,59 @@
-# ordersystem
+# 満満菓訂單與進銷存系統
+
+此版本以 Vercel 部署 Next.js，使用 Neon PostgreSQL 儲存商品、庫存批次、訂單和異動紀錄，不依賴 Google 試算表執行日常營運。
+
+## 本機設定
+
+1. 複製 `.env.example` 為 `.env.local`。
+2. 填入 Neon 的 `DATABASE_URL`、管理密碼與 32 字元以上的 `SESSION_SECRET`。
+3. 執行 `npm install`。
+4. 執行 `npm run db:migrate` 建立資料庫。
+5. 執行 `npm run dev`。
+
+顧客網站位於 `/`，管理後台位於 `/admin`。
+
+## 日常操作
+
+正式網站：<https://manmango-ordersystem.vercel.app>
+
+管理後台：<https://manmango-ordersystem.vercel.app/admin>
+
+### 新增或修改商品
+
+1. 登入管理後台，找到「新增或更新商品」。
+2. 填入商品編號、名稱、品牌、售價、保存天數及圖片網址。
+3. 按「儲存商品」。使用新的商品編號會新增商品；使用既有商品編號會更新該商品資料。
+4. 新商品建立後，再到「登記進貨」加入可販售庫存。
+
+商品編號是商品的唯一識別，建立後應保持不變。若商品暫停販售，可在「商品與即時庫存」按狀態按鈕切換上架或下架。
+
+### 登記進貨
+
+1. 在「登記進貨」輸入既有商品編號。
+2. 為這次進貨建立唯一的批次編號，例如 `YM1-2609A`。
+3. 填入數量、單位成本、進貨日期及賞味期限。
+4. 按「新增進貨批次」，前台可售庫存會立即更新。
+
+系統出貨時依賞味期限和進貨日期自動採先到期先出。超過賞味期限的庫存不會顯示在前台，也不會分配給新訂單，後台會另列為「已過期」。顧客下單與取消訂單也會自動扣除或返還庫存。
+
+## 從舊試算表一次性匯入
+
+先從 Google 試算表下載 `.xlsx` 備份，再執行：
+
+```sh
+npm run import:xlsx -- /完整路徑/商品主檔與銷售資料.xlsx
+```
+
+匯入工具會讀取「商品進貨明細」與「銷售明細」，建立商品、批次庫存及歷史訂單。工具可以重複執行，商品、批次及訂單皆使用唯一編號避免重複。
+
+完成資料核對和正式切換後，舊試算表與 Google Apps Script 不再參與接單流程。
+
+## Vercel 部署
+
+1. 在 Vercel 建立專案並連結 GitHub repository。
+2. 從 Vercel Marketplace 安裝 Neon PostgreSQL。
+3. 在 Environment Variables 加入 `ADMIN_PASSWORD` 和 `SESSION_SECRET`。
+4. 第一次部署前，使用 Neon SQL Editor 執行 `db/schema.sql`，或在含 `DATABASE_URL` 的環境執行 `npm run db:migrate`。
+5. 部署並驗證商品、測試訂單、扣庫存、取消訂單還庫存與後台登入。
+
+正式營運前，請先使用測試商品完成一筆完整流程。
